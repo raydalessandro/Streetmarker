@@ -4,6 +4,7 @@ import { SpotForm } from './components/SpotForm';
 import { SpotList } from './components/SpotList';
 import { SpotFilters } from './components/SpotFilters';
 import { ImportExport } from './components/ImportExport';
+import { BottomNav, ViewType } from './components/BottomNav';
 import { StorageService } from './services/StorageService';
 import { SpotService } from './services/SpotService';
 import type { Spot } from './types/spot';
@@ -25,6 +26,7 @@ function App() {
   const [newSpotCoords, setNewSpotCoords] = useState<[number, number] | null>(null);
   const [filters, setFilters] = useState<SpotFiltersType>({});
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentView, setCurrentView] = useState<ViewType>('map');
 
   // Services (memoized to prevent recreation on every render)
   const storageService = useMemo(() => new StorageService(), []);
@@ -200,7 +202,14 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-content">
-          <h1>StreetMark Milano</h1>
+          <div className="logo-container">
+            <img src="/assets/logo.jpg" alt="StreetMark" className="logo-image" />
+            <h1>
+              STREET<span className="neon-text">MARK</span>
+              <span className="logo-subtitle">MILAN</span>
+            </h1>
+          </div>
+          <div className="status-badge">REC // LOCAL</div>
           <ImportExport spots={spots} onImport={handleImport} />
         </div>
       </header>
@@ -239,6 +248,13 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Bottom Navigation - Mobile Only */}
+      <BottomNav
+        currentView={currentView}
+        onViewChange={setCurrentView}
+        onAddClick={handleMapClick.bind(null, [45.4642, 9.1900])}
+      />
     </div>
   );
 }
