@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Spot, SpotType, SpotStatus, SecurityLevel, TimeRange } from '../types/spot';
 import { SpotService } from '../services/SpotService';
+import { PhotoUpload } from './PhotoUpload';
 
 export interface SpotFormProps {
   spot?: Spot;
@@ -23,6 +24,7 @@ export function SpotForm({ spot, initialCoords, onSubmit, onCancel }: SpotFormPr
   const [owner, setOwner] = useState<string>(spot?.owner || '');
   const [notes, setNotes] = useState<string>(spot?.notes || '');
   const [availability, setAvailability] = useState<TimeRange[]>(spot?.availability || []);
+  const [photos, setPhotos] = useState<string[]>(spot?.photos || []);
   const [errors, setErrors] = useState<string[]>([]);
 
   const spotService = new SpotService();
@@ -59,6 +61,7 @@ export function SpotForm({ spot, initialCoords, onSubmit, onCancel }: SpotFormPr
       securityLevel,
       owner: owner || undefined,
       notes,
+      photos: photos.length > 0 ? photos : undefined,
     };
 
     const validation = spotService.validateSpot(spotData);
@@ -230,6 +233,14 @@ export function SpotForm({ spot, initialCoords, onSubmit, onCancel }: SpotFormPr
             </button>
           </div>
         ))}
+      </div>
+
+      {/* Photo Upload */}
+      <div className="form-group">
+        <PhotoUpload
+          photos={photos}
+          onPhotosChange={setPhotos}
+        />
       </div>
 
       {errors.length > 0 && (
