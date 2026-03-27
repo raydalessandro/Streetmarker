@@ -5,6 +5,8 @@ import { SpotList } from './components/SpotList';
 import { SpotFilters } from './components/SpotFilters';
 import { ImportExport } from './components/ImportExport';
 import { BottomNav, ViewType } from './components/BottomNav';
+import { Gallery } from './components/Gallery';
+import { Feed } from './components/Feed';
 import { StorageService } from './services/StorageService';
 import { SpotService } from './services/SpotService';
 import type { Spot } from './types/spot';
@@ -177,6 +179,41 @@ function App() {
   };
 
   /**
+   * Handle view change from BottomNav
+   */
+  const handleViewChange = (view: ViewType) => {
+    setCurrentView(view);
+    // If switching to spots view, open sidebar
+    if (view === 'spots') {
+      setIsSidebarOpen(true);
+      setCurrentView('map'); // Actually stay on map, just open sidebar
+    } else {
+      setIsSidebarOpen(false);
+    }
+  };
+
+  /**
+   * Handle spot click from Gallery/Feed - switch to map and open spot
+   */
+  const handleSpotClickFromView = (spot: Spot) => {
+    setCurrentView('map');
+    setSelectedSpot(spot);
+    setNewSpotCoords(null);
+    setIsFormOpen(true);
+  };
+
+  /**
+   * Handle FAB click - open form for new spot at map center
+   */
+  const handleAddClick = () => {
+    // Default to Milano center coordinates
+    const milanCenter: [number, number] = [45.4642, 9.1900];
+    setNewSpotCoords(milanCenter);
+    setSelectedSpot(null);
+    setIsFormOpen(true);
+  };
+
+  /**
    * Handle import - bulk add/update spots
    */
   const handleImport = async (mergeResult: MergeResult) => {
@@ -227,44 +264,65 @@ function App() {
       </header>
 
       <div className="main">
-        {/* Sidebar Overlay */}
-        {isSidebarOpen && (
-          <div
-            className="sidebar-overlay visible"
-            onClick={() => setIsSidebarOpen(false)}
+        {/* Map View with Sidebar */}
+        {currentView === 'map' && (
+          <>
+            {/* Sidebar Overlay */}
+            {isSidebarOpen && (
+              <div
+                className="sidebar-overlay visible"
+                onClick={() => setIsSidebarOpen(false)}
+              />
+            )}
+
+            {/* Sidebar Drawer */}
+            <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+              <button
+                className="sidebar-close"
+                onClick={() => setIsSidebarOpen(false)}
+                aria-label="Close menu"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+              <SpotFilters
+                onFilterChange={handleFilterChange}
+                onSearchChange={handleSearchChange}
+              />
+              <SpotList
+                spots={filteredSpots}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </aside>
+
+            <div className="map-container">
+              <MapView
+                spots={filteredSpots}
+                onMapClick={handleMapClick}
+                onMarkerClick={handleMarkerClick}
+              />
+            </div>
+          </>
+        )}
+
+        {/* Gallery View */}
+        {currentView === 'gallery' && (
+          <Gallery
+            spots={filteredSpots}
+            onSpotClick={handleSpotClickFromView}
           />
         )}
 
-        {/* Sidebar Drawer */}
-        <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-          <button
-            className="sidebar-close"
-            onClick={() => setIsSidebarOpen(false)}
-            aria-label="Close menu"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-          <SpotFilters
-            onFilterChange={handleFilterChange}
-            onSearchChange={handleSearchChange}
-          />
-          <SpotList
+        {/* Feed View */}
+        {currentView === 'feed' && (
+          <Feed
             spots={filteredSpots}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
+            onSpotClick={handleSpotClickFromView}
           />
-        </aside>
-
-        <div className="map-container">
-          <MapView
-            spots={filteredSpots}
-            onMapClick={handleMapClick}
-            onMarkerClick={handleMarkerClick}
-          />
-        </div>
+        )}
       </div>
 
       {isFormOpen && (
@@ -283,8 +341,8 @@ function App() {
       {/* Bottom Navigation - Mobile Only */}
       <BottomNav
         currentView={currentView}
-        onViewChange={setCurrentView}
-        onAddClick={handleMapClick.bind(null, [45.4642, 9.1900])}
+        onViewChange={handleViewChange}
+        onAddClick={handleAddClick}
       />
     </div>
   );
