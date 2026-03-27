@@ -310,6 +310,60 @@ body {
   margin-bottom: 0.75rem;
 }
 
+/* Collapsible Filter Sections */
+.filter-section.collapsible {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: all var(--transition-smooth);
+}
+
+.filter-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--glass-bg);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.filter-section-header:hover {
+  background: rgba(15, 15, 15, 0.9);
+}
+
+.filter-section-header h3 {
+  margin-bottom: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.chevron-icon {
+  transition: transform var(--transition-smooth);
+  color: var(--text-secondary);
+}
+
+.chevron-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.filter-section-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--transition-smooth);
+  padding: 0 var(--space-4);
+}
+
+.filter-section-content.expanded {
+  max-height: 300px;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
 .search-input {
   width: 100%;
   padding: 0.5rem;
