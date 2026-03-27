@@ -13,15 +13,17 @@ export function Gallery({ spots, onSpotClick }: GalleryProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<{ spot: Spot; photo: string } | null>(null);
 
   useEffect(() => {
-    // Flatten all photos from all spots
+    // Flatten all photos from FAVORITE spots only (personal gallery)
     const photos: Array<{ spot: Spot; photo: string; index: number }> = [];
-    spots.forEach(spot => {
-      if (spot.photos && spot.photos.length > 0) {
-        spot.photos.forEach((photo, index) => {
-          photos.push({ spot, photo, index });
-        });
-      }
-    });
+    spots
+      .filter(spot => spot.isFavorite) // Only show favorite spots
+      .forEach(spot => {
+        if (spot.photos && spot.photos.length > 0) {
+          spot.photos.forEach((photo, index) => {
+            photos.push({ spot, photo, index });
+          });
+        }
+      });
     setAllPhotos(photos);
   }, [spots]);
 
@@ -40,18 +42,18 @@ export function Gallery({ spots, onSpotClick }: GalleryProps) {
   return (
     <div className="gallery-view">
       <div className="gallery-header">
-        <h2>Gallery</h2>
+        <h2>My Gallery</h2>
         <div className="gallery-stats">
           <span>{allPhotos.length} photos</span>
-          <span>{spots.filter(s => s.photos && s.photos.length > 0).length} spots</span>
+          <span>{spots.filter(s => s.isFavorite && s.photos && s.photos.length > 0).length} favorite spots</span>
         </div>
       </div>
 
       {allPhotos.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">📸</div>
-          <p>No photos yet</p>
-          <p className="empty-hint">Add spots with photos to see them here</p>
+          <div className="empty-icon">💖</div>
+          <p>No favorite spots yet</p>
+          <p className="empty-hint">Add spots to favorites to see them in your personal gallery</p>
         </div>
       ) : (
         <div className="gallery-grid">
