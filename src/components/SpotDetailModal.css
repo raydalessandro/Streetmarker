@@ -5,7 +5,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  max-height: 85vh;
+  max-height: 70vh;
   background: var(--bg2);
   border: 1px solid var(--border2);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
@@ -513,10 +513,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-3);
-  padding: var(--space-4);
+  gap: var(--space-2);
+  padding: var(--space-3);
   border-radius: var(--radius-lg);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   font-family: var(--font-title);
   cursor: pointer;
@@ -580,6 +580,86 @@
   to {
     opacity: 1;
   }
+}
+
+/* QR Code Modal — Fullscreen Black */
+.qr-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn var(--transition-fast);
+}
+
+.qr-modal {
+  position: relative;
+  width: 90%;
+  max-width: 400px;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.qr-modal-close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  color: var(--t1);
+  font-size: 20px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.qr-modal-close:hover {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
+.qr-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.qr-modal-content h3 {
+  font-family: var(--font-title);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--t1);
+  margin: 0;
+  text-align: center;
+}
+
+.qr-code-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px rgba(200, 255, 0, 0.2);
+}
+
+.qr-modal-hint {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--t3);
+  text-align: center;
+  margin: 0;
 }
 
 /* Desktop: Center modal instead of bottom sheet */
