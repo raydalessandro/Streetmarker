@@ -210,20 +210,30 @@ function App() {
   const handleToggleFavorite = async () => {
     if (!selectedSpot) return;
 
+    const updatedSpot: Spot = {
+      ...selectedSpot,
+      isFavorite: !selectedSpot.isFavorite,
+      updatedAt: Date.now(),
+    };
+
+    // Optimistic update: Update UI immediately
+    setSelectedSpot(updatedSpot);
+    setSpots(currentSpots =>
+      currentSpots.map(s => s.id === updatedSpot.id ? updatedSpot : s)
+    );
+
     try {
-      const updatedSpot: Spot = {
-        ...selectedSpot,
-        isFavorite: !selectedSpot.isFavorite,
-        updatedAt: Date.now(),
-      };
-
+      // Persist to IndexedDB
       await storageService.updateSpot(updatedSpot);
-      await refreshSpots();
-
-      // Update selectedSpot state to reflect the change in modal
-      setSelectedSpot(updatedSpot);
     } catch (error) {
       console.error('Failed to toggle favorite:', error);
+
+      // Rollback on error
+      setSelectedSpot(selectedSpot);
+      setSpots(currentSpots =>
+        currentSpots.map(s => s.id === selectedSpot.id ? selectedSpot : s)
+      );
+
       alert(`Error: ${error instanceof Error ? error.message : 'Failed to update favorite'}`);
     }
   };
@@ -232,17 +242,28 @@ function App() {
    * Handle toggle favorite from SpotListView
    */
   const handleToggleFavoriteFromList = async (spot: Spot) => {
-    try {
-      const updatedSpot: Spot = {
-        ...spot,
-        isFavorite: !spot.isFavorite,
-        updatedAt: Date.now(),
-      };
+    const updatedSpot: Spot = {
+      ...spot,
+      isFavorite: !spot.isFavorite,
+      updatedAt: Date.now(),
+    };
 
+    // Optimistic update: Update UI immediately
+    setSpots(currentSpots =>
+      currentSpots.map(s => s.id === updatedSpot.id ? updatedSpot : s)
+    );
+
+    try {
+      // Persist to IndexedDB
       await storageService.updateSpot(updatedSpot);
-      await refreshSpots();
     } catch (error) {
       console.error('Failed to toggle favorite:', error);
+
+      // Rollback on error
+      setSpots(currentSpots =>
+        currentSpots.map(s => s.id === spot.id ? spot : s)
+      );
+
       alert(`Error: ${error instanceof Error ? error.message : 'Failed to update favorite'}`);
     }
   };
