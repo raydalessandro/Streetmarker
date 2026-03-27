@@ -20,6 +20,7 @@ export interface Spot {
   owner?: string;                // crew/writer name (optional)
   notes: string;
   photos?: string[];             // base64 or blob URLs (optional)
+  isFavorite?: boolean;          // marked as favorite for personal gallery
   createdAt: number;             // Unix timestamp
   updatedAt: number;             // Unix timestamp
 }
