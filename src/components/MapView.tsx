@@ -79,11 +79,16 @@ export function MapView({ spots, onMapClick, onMarkerClick }: MapViewProps) {
 
         // Register click handler for "Edit" button in popup
         marker.on('popupopen', () => {
+          console.log('Popup opened for spot:', spot.id);
           const editButton = document.querySelector(`button[data-spot-id="${spot.id}"]`);
           if (editButton) {
+            console.log('Edit button found, attaching click handler');
             editButton.addEventListener('click', () => {
+              console.log('Edit button clicked for spot:', spot.id);
               onMarkerClick(spot);
             });
+          } else {
+            console.warn('Edit button not found for spot:', spot.id);
           }
         });
 

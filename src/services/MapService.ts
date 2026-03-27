@@ -86,27 +86,45 @@ export class MapService {
       iconAnchor: [12, 12],
     });
 
-    const marker = L.marker(spot.coords, { icon }).bindPopup(this.createPopupContent(spot));
+    try {
+      const marker = L.marker(spot.coords, { icon }).bindPopup(this.createPopupContent(spot));
 
-    // Add data-spot-id to marker element for E2E testing
-    marker.on('add', () => {
-      const element = marker.getElement();
-      if (element) {
-        element.setAttribute('data-spot-id', spot.id);
+      // Add data-spot-id to marker element for E2E testing
+      marker.on('add', () => {
+        const element = marker.getElement();
+        if (element) {
+          element.setAttribute('data-spot-id', spot.id);
+        }
+      });
+
+      // Add to cluster group
+      if (this.clusterGroup) {
+        this.clusterGroup.addLayer(marker);
+      } else {
+        marker.addTo(this.map);
       }
-    });
 
-    // Add to cluster group
-    if (this.clusterGroup) {
-      this.clusterGroup.addLayer(marker);
-    } else {
-      marker.addTo(this.map);
+      // Store marker reference
+      this.markers.set(spot.id, marker);
+
+      return marker;
+    } catch (err) {
+      console.error('Error creating marker for spot:', spot.id, err);
+      // Create a basic marker without popup as fallback
+      const fallbackMarker = L.marker(spot.coords, { icon }).bindPopup(`
+        <div>
+          <h3>${this.getSpotTypeLabel(spot.type)}</h3>
+          <p>Error loading spot details</p>
+        </div>
+      `);
+      if (this.clusterGroup) {
+        this.clusterGroup.addLayer(fallbackMarker);
+      } else {
+        fallbackMarker.addTo(this.map);
+      }
+      this.markers.set(spot.id, fallbackMarker);
+      return fallbackMarker;
     }
-
-    // Store marker reference
-    this.markers.set(spot.id, marker);
-
-    return marker;
   }
 
   /**
@@ -176,36 +194,54 @@ export class MapService {
    * @returns HTML string
    */
   private createPopupContent(spot: Spot): string {
-    const photosHTML = spot.photos && spot.photos.length > 0
-      ? `
-        <div style="margin: 8px 0;">
-          <strong>Photos (${spot.photos.length}):</strong>
-          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-top: 8px;">
-            ${spot.photos.map((photo, index) => {
-              const isVideo = photo.startsWith('data:video/');
-              if (isVideo) {
-                return `
-                  <video
-                    src="${photo}"
-                    style="width: 100%; height: 80px; object-fit: cover; border-radius: 4px; cursor: pointer;"
-                    controls
-                  ></video>
-                `;
-              } else {
-                return `
-                  <img
-                    src="${photo}"
-                    alt="Photo ${index + 1}"
-                    style="width: 100%; height: 80px; object-fit: cover; border-radius: 4px; cursor: pointer;"
-                    onclick="window.open(this.src, '_blank')"
-                  />
-                `;
-              }
-            }).join('')}
-          </div>
-        </div>
-      `
-      : '';
+    let photosHTML = '';
+
+    try {
+      if (spot.photos && spot.photos.length > 0) {
+        const validPhotos = spot.photos.filter(photo =>
+          photo && (photo.startsWith('data:image/') || photo.startsWith('data:video/'))
+        );
+
+        if (validPhotos.length > 0) {
+          photosHTML = `
+            <div style="margin: 8px 0;">
+              <strong>Photos (${validPhotos.length}):</strong>
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-top: 8px;">
+                ${validPhotos.map((photo, index) => {
+                  try {
+                    const isVideo = photo.startsWith('data:video/');
+                    if (isVideo) {
+                      return `
+                        <video
+                          src="${photo}"
+                          style="width: 100%; height: 80px; object-fit: cover; border-radius: 4px; cursor: pointer;"
+                          controls
+                        ></video>
+                      `;
+                    } else {
+                      return `
+                        <img
+                          src="${photo}"
+                          alt="Photo ${index + 1}"
+                          style="width: 100%; height: 80px; object-fit: cover; border-radius: 4px; cursor: pointer;"
+                          onclick="window.open(this.src, '_blank')"
+                        />
+                      `;
+                    }
+                  } catch (err) {
+                    console.error('Error rendering photo/video:', err);
+                    return ''; // Skip invalid media
+                  }
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }
+      }
+    } catch (err) {
+      console.error('Error rendering photos in popup:', err);
+      photosHTML = ''; // Silently skip photos if there's an error
+    }
 
     return `
       <div style="min-width: 200px; max-width: 300px;">
