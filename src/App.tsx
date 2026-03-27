@@ -27,6 +27,7 @@ function App() {
   const [filters, setFilters] = useState<SpotFiltersType>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [currentView, setCurrentView] = useState<ViewType>('map');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Services (memoized to prevent recreation on every render)
   const storageService = useMemo(() => new StorageService(), []);
@@ -202,6 +203,17 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-content">
+          <button
+            className="hamburger-btn"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            aria-label="Toggle menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
           <div className="logo-container">
             <img src="/assets/logo.jpg" alt="StreetMark" className="logo-image" />
             <h1>
@@ -215,7 +227,26 @@ function App() {
       </header>
 
       <div className="main">
-        <aside className="sidebar">
+        {/* Sidebar Overlay */}
+        {isSidebarOpen && (
+          <div
+            className="sidebar-overlay visible"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
+        {/* Sidebar Drawer */}
+        <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+          <button
+            className="sidebar-close"
+            onClick={() => setIsSidebarOpen(false)}
+            aria-label="Close menu"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
           <SpotFilters
             onFilterChange={handleFilterChange}
             onSearchChange={handleSearchChange}

@@ -165,6 +165,28 @@ body {
   margin-left: var(--space-2);
 }
 
+/* Hamburger Menu Button */
+.hamburger-btn {
+  background: var(--glass-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.hamburger-btn:hover {
+  background: var(--neon-green);
+  color: var(--bg-primary);
+  border-color: var(--neon-green);
+}
+
 /* Status Badge */
 .status-badge {
   font-size: var(--text-xs);
@@ -178,29 +200,92 @@ body {
   -webkit-backdrop-filter: var(--glass-blur);
 }
 
+/* Hide hamburger on desktop */
+@media (min-width: 768px) {
+  .hamburger-btn {
+    display: none;
+  }
+}
+
 /* Main Content Area */
 .main {
   display: flex;
   flex: 1;
   overflow: hidden;
   flex-direction: column;
+  position: relative;
 }
 
-/* Sidebar */
+/* Sidebar - Hidden drawer on mobile */
 .sidebar {
-  background-color: var(--bg-secondary);
-  border-right: 1px solid var(--border-color);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-right: 1px solid var(--glass-border);
   overflow-y: auto;
-  display: flex;
+  display: none; /* Hidden by default on mobile */
   flex-direction: column;
-  height: 300px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 85vw;
+  max-width: 350px;
+  height: 100vh;
+  z-index: 1100;
+  transform: translateX(-100%);
+  transition: transform var(--transition-smooth);
+  box-shadow: var(--shadow-lg);
+  padding-top: var(--space-16); /* Space for close button */
 }
 
-/* Map Container */
+.sidebar.open {
+  display: flex;
+  transform: translateX(0);
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1099;
+  display: none;
+}
+
+.sidebar-overlay.visible {
+  display: block;
+}
+
+/* Sidebar Close Button */
+.sidebar-close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-primary);
+  z-index: 1101;
+}
+
+.sidebar-close:hover {
+  background: var(--neon-green);
+  color: var(--bg-primary);
+}
+
+/* Map Container - Fullscreen on mobile */
 .map-container {
   flex: 1;
   position: relative;
-  min-height: 300px;
+  width: 100%;
+  height: 100%;
 }
 
 /* Filters */
