@@ -32,12 +32,21 @@ function App() {
   const [newSpotCoords, setNewSpotCoords] = useState<[number, number] | null>(null);
   const [filters, setFilters] = useState<SpotFiltersType>({});
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentView, setCurrentView] = useState<ViewType>('map');
+  const [currentView, setCurrentView] = useState<ViewType>(() => {
+    // Restore view from localStorage
+    const savedView = localStorage.getItem('streetmark-current-view');
+    return (savedView as ViewType) || 'map';
+  });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Services (memoized to prevent recreation on every render)
   const storageService = useMemo(() => new StorageService(), []);
   const spotService = useMemo(() => new SpotService(), []);
+
+  // Persist view to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('streetmark-current-view', currentView);
+  }, [currentView]);
 
   // Helper to refresh spots from storage
   const refreshSpots = async () => {

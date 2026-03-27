@@ -16,7 +16,7 @@ export function Gallery({ spots, onSpotClick }: GalleryProps) {
     // Flatten all photos from FAVORITE spots only (personal gallery)
     const photos: Array<{ spot: Spot; photo: string; index: number }> = [];
     spots
-      .filter(spot => spot.isFavorite) // Only show favorite spots
+      .filter(spot => spot.isFavorite === true) // Only show favorite spots
       .forEach(spot => {
         if (spot.photos && spot.photos.length > 0) {
           spot.photos.forEach((photo, index) => {
