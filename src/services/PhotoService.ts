@@ -14,12 +14,30 @@ export interface PhotoCountResult {
 export class PhotoService {
   // Constants
   static readonly MAX_PHOTO_SIZE = 5 * 1024 * 1024; // 5MB in bytes
-  static readonly MAX_PHOTOS_PER_SPOT = 5;
-  static readonly ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+  static readonly MAX_VIDEO_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+  static readonly MAX_PHOTOS_PER_SPOT = 10; // 10 photos max
+  static readonly MAX_VIDEOS_PER_SPOT = 5;  // 5 videos max
+  static readonly MAX_MEDIA_PER_SPOT = 15;  // 15 total (photos + videos)
+  static readonly ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+  static readonly ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
   static readonly COMPRESSION_THRESHOLD_KB = 1024; // 1MB - compress if larger
 
   /**
-   * Validate photo file (size, type, empty check)
+   * Check if file is video
+   */
+  isVideo(file: File): boolean {
+    return file.type.startsWith('video/');
+  }
+
+  /**
+   * Check if file is image
+   */
+  isImage(file: File): boolean {
+    return file.type.startsWith('image/');
+  }
+
+  /**
+   * Validate media file (photo or video)
    */
   validatePhoto(file: File): PhotoValidationResult {
     const errors: string[] = [];
@@ -29,14 +47,31 @@ export class PhotoService {
       errors.push('File is empty');
     }
 
-    // Check file size (max 5MB)
-    if (file.size > PhotoService.MAX_PHOTO_SIZE) {
+    const isVideo = this.isVideo(file);
+    const isImage = this.isImage(file);
+
+    // Check if it's a supported media type
+    if (!isVideo && !isImage) {
+      errors.push('Invalid file type. Only images (JPEG, PNG, WebP) and videos (MP4, WebM, MOV) are allowed');
+      return { valid: false, errors };
+    }
+
+    // Check file size based on type
+    if (isImage && file.size > PhotoService.MAX_PHOTO_SIZE) {
       errors.push('Photo size exceeds 5MB limit');
     }
 
+    if (isVideo && file.size > PhotoService.MAX_VIDEO_SIZE) {
+      errors.push('Video size exceeds 10MB limit');
+    }
+
     // Check MIME type
-    if (!PhotoService.ALLOWED_TYPES.includes(file.type)) {
-      errors.push('Invalid file type. Only JPEG, PNG, and WebP are allowed');
+    if (isImage && !PhotoService.ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      errors.push('Invalid image type. Only JPEG, PNG, and WebP are allowed');
+    }
+
+    if (isVideo && !PhotoService.ALLOWED_VIDEO_TYPES.includes(file.type)) {
+      errors.push('Invalid video type. Only MP4, WebM, and MOV are allowed');
     }
 
     return {
@@ -70,18 +105,18 @@ export class PhotoService {
   }
 
   /**
-   * Validate photo count (max 5 photos per spot)
+   * Validate media count (max 10 photos + 5 videos = 15 total per spot)
    */
   validatePhotoCount(photos: string[]): PhotoCountResult {
     const count = photos.length;
-    const max = PhotoService.MAX_PHOTOS_PER_SPOT;
+    const max = PhotoService.MAX_MEDIA_PER_SPOT;
 
     if (count > max) {
       return {
         valid: false,
         canAddMore: false,
         remaining: 0,
-        error: `Maximum ${max} photos per spot`,
+        error: `Maximum ${max} media files per spot`,
       };
     }
 
@@ -89,6 +124,53 @@ export class PhotoService {
       valid: true,
       canAddMore: count < max,
       remaining: max - count,
+    };
+  }
+
+  /**
+   * Count photos and videos separately in media array
+   */
+  countMediaTypes(photos: string[]): { photoCount: number; videoCount: number } {
+    let photoCount = 0;
+    let videoCount = 0;
+
+    photos.forEach(base64 => {
+      if (base64.startsWith('data:video/')) {
+        videoCount++;
+      } else if (base64.startsWith('data:image/')) {
+        photoCount++;
+      }
+    });
+
+    return { photoCount, videoCount };
+  }
+
+  /**
+   * Validate media count with separate photo/video limits
+   */
+  validateMediaLimits(photos: string[]): PhotoCountResult {
+    const { photoCount, videoCount } = this.countMediaTypes(photos);
+    const totalCount = photos.length;
+
+    const errors: string[] = [];
+
+    if (photoCount > PhotoService.MAX_PHOTOS_PER_SPOT) {
+      errors.push(`Maximum ${PhotoService.MAX_PHOTOS_PER_SPOT} photos allowed (current: ${photoCount})`);
+    }
+
+    if (videoCount > PhotoService.MAX_VIDEOS_PER_SPOT) {
+      errors.push(`Maximum ${PhotoService.MAX_VIDEOS_PER_SPOT} videos allowed (current: ${videoCount})`);
+    }
+
+    if (totalCount > PhotoService.MAX_MEDIA_PER_SPOT) {
+      errors.push(`Maximum ${PhotoService.MAX_MEDIA_PER_SPOT} total media files allowed (current: ${totalCount})`);
+    }
+
+    return {
+      valid: errors.length === 0,
+      canAddMore: totalCount < PhotoService.MAX_MEDIA_PER_SPOT,
+      remaining: PhotoService.MAX_MEDIA_PER_SPOT - totalCount,
+      error: errors.length > 0 ? errors.join(', ') : undefined,
     };
   }
 

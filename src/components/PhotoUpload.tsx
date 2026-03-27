@@ -14,9 +14,10 @@ export function PhotoUpload({ photos, onPhotosChange, disabled = false }: PhotoU
   const fileInputRef = useRef<HTMLInputElement>(null);
   const photoService = new PhotoService();
 
-  const maxPhotos = PhotoService.MAX_PHOTOS_PER_SPOT;
-  const canAddMore = photos.length < maxPhotos;
-  const remaining = maxPhotos - photos.length;
+  const maxMedia = PhotoService.MAX_MEDIA_PER_SPOT;
+  const canAddMore = photos.length < maxMedia;
+  const remaining = maxMedia - photos.length;
+  const { photoCount, videoCount } = photoService.countMediaTypes(photos);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -80,9 +81,9 @@ export function PhotoUpload({ photos, onPhotosChange, disabled = false }: PhotoU
   return (
     <div className="photo-upload">
       <div className="photo-upload-header">
-        <label htmlFor="photo-input">Upload Photo</label>
+        <label htmlFor="photo-input">Upload Photo/Video</label>
         <span className="photo-count">
-          {photos.length} / {maxPhotos} photos
+          {photos.length} / {maxMedia} media ({photoCount} photos, {videoCount} videos)
         </span>
       </div>
 
@@ -91,16 +92,16 @@ export function PhotoUpload({ photos, onPhotosChange, disabled = false }: PhotoU
         ref={fileInputRef}
         id="photo-input"
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
         multiple
         capture="environment" // Enable camera on mobile
         onChange={handleFileChange}
         disabled={disabled || !canAddMore || isUploading}
         style={{ display: 'none' }}
-        aria-label="Upload photo"
+        aria-label="Upload photo or video"
       />
 
-      {/* Add Photo Button */}
+      {/* Add Media Button */}
       {canAddMore && (
         <button
           type="button"
@@ -108,13 +109,13 @@ export function PhotoUpload({ photos, onPhotosChange, disabled = false }: PhotoU
           onClick={handleAddClick}
           disabled={disabled || isUploading}
         >
-          {isUploading ? 'Uploading...' : 'Add Photo'}
+          {isUploading ? 'Uploading...' : 'Add Photo/Video'}
         </button>
       )}
 
-      {/* Max Photos Message */}
+      {/* Max Media Message */}
       {!canAddMore && (
-        <p className="max-photos-message">Maximum 5 photos reached</p>
+        <p className="max-photos-message">Maximum 15 media files reached (10 photos + 5 videos max)</p>
       )}
 
       {/* Error Message */}
@@ -124,23 +125,32 @@ export function PhotoUpload({ photos, onPhotosChange, disabled = false }: PhotoU
         </p>
       )}
 
-      {/* Photo Thumbnails */}
+      {/* Media Thumbnails */}
       {photos.length > 0 && (
         <div className="photo-thumbnails">
-          {photos.map((photo, index) => (
-            <div key={index} className="photo-thumbnail">
-              <img src={photo} alt={`Photo ${index + 1}`} />
-              <button
-                type="button"
-                className="btn-delete-photo"
-                onClick={() => handleDelete(index)}
-                disabled={disabled}
-                aria-label={`Delete photo ${index + 1}`}
-              >
-                ×
-              </button>
-            </div>
-          ))}
+          {photos.map((media, index) => {
+            const isVideo = media.startsWith('data:video/');
+            return (
+              <div key={index} className="photo-thumbnail">
+                {isVideo ? (
+                  <video src={media} controls style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
+                    Your browser does not support video playback.
+                  </video>
+                ) : (
+                  <img src={media} alt={`Media ${index + 1}`} />
+                )}
+                <button
+                  type="button"
+                  className="btn-delete-photo"
+                  onClick={() => handleDelete(index)}
+                  disabled={disabled}
+                  aria-label={`Delete media ${index + 1}`}
+                >
+                  ×
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
