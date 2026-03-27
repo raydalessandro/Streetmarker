@@ -76,12 +76,17 @@ export function MapView({ spots, onMapClick, onMarkerClick }: MapViewProps) {
       } else {
         // Add new marker
         const marker = mapService.addMarker(spot);
-        
-        // Register click handler for marker
-        marker.on('click', () => {
-          onMarkerClick(spot);
+
+        // Register click handler for "Edit" button in popup
+        marker.on('popupopen', () => {
+          const editButton = document.querySelector(`button[data-spot-id="${spot.id}"]`);
+          if (editButton) {
+            editButton.addEventListener('click', () => {
+              onMarkerClick(spot);
+            });
+          }
         });
-        
+
         currentSpotIds.add(spot.id);
       }
     });

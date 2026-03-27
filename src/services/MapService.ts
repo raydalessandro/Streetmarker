@@ -171,13 +171,44 @@ export class MapService {
   }
 
   /**
-   * Create popup HTML content for marker
+   * Create popup HTML content for marker with photos and edit button
    * @param spot - Spot data
    * @returns HTML string
    */
   private createPopupContent(spot: Spot): string {
+    const photosHTML = spot.photos && spot.photos.length > 0
+      ? `
+        <div style="margin: 8px 0;">
+          <strong>Photos (${spot.photos.length}):</strong>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-top: 8px;">
+            ${spot.photos.map((photo, index) => {
+              const isVideo = photo.startsWith('data:video/');
+              if (isVideo) {
+                return `
+                  <video
+                    src="${photo}"
+                    style="width: 100%; height: 80px; object-fit: cover; border-radius: 4px; cursor: pointer;"
+                    controls
+                  ></video>
+                `;
+              } else {
+                return `
+                  <img
+                    src="${photo}"
+                    alt="Photo ${index + 1}"
+                    style="width: 100%; height: 80px; object-fit: cover; border-radius: 4px; cursor: pointer;"
+                    onclick="window.open(this.src, '_blank')"
+                  />
+                `;
+              }
+            }).join('')}
+          </div>
+        </div>
+      `
+      : '';
+
     return `
-      <div style="min-width: 200px;">
+      <div style="min-width: 200px; max-width: 300px;">
         <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: bold;">
           ${this.getSpotTypeLabel(spot.type)}
         </h3>
@@ -185,6 +216,26 @@ export class MapService {
         <p style="margin: 4px 0;"><strong>Security:</strong> ${spot.securityLevel}</p>
         ${spot.owner ? `<p style="margin: 4px 0;"><strong>Owner:</strong> ${spot.owner}</p>` : ''}
         ${spot.notes ? `<p style="margin: 4px 0;"><strong>Notes:</strong> ${spot.notes}</p>` : ''}
+        ${photosHTML}
+        <button
+          data-spot-id="${spot.id}"
+          style="
+            width: 100%;
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 14px;
+          "
+          onmouseover="this.style.background='#5568d3'"
+          onmouseout="this.style.background='#667eea'"
+        >
+          Edit Spot
+        </button>
       </div>
     `;
   }
