@@ -790,6 +790,31 @@ button {
   }
 }
 
+/* === LONG PRESS INDICATOR === */
+.long-press-indicator {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  margin-left: -20px;
+  margin-top: -20px;
+  border-radius: 50%;
+  background: var(--accent);
+  pointer-events: none;
+  z-index: 450;
+  animation: expandCircle 500ms ease-out;
+}
+
+@keyframes expandCircle {
+  from {
+    transform: scale(0);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+}
+
 /* === NEARBY SPOTS STRIP === */
 .nearby-spots-strip {
   position: absolute;

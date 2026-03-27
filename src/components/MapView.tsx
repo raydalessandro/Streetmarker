@@ -13,13 +13,14 @@ interface MapViewProps {
   highlightedSpotId?: string | null;
   onMapClick: (coords: [number, number]) => void;
   onMarkerClick: (spot: Spot) => void;
+  onLongPress?: (coords: [number, number]) => void;
 }
 
 interface SpotWithDistance extends Spot {
   distance: number; // km
 }
 
-export function MapView({ spots, highlightedSpotId, onMapClick, onMarkerClick }: MapViewProps) {
+export function MapView({ spots, highlightedSpotId, onMapClick, onMarkerClick, onLongPress }: MapViewProps) {
   const mapServiceRef = useRef<MapService | null>(null);
   const spotIdsRef = useRef<Set<string>>(new Set());
   const locationServiceRef = useRef<LocationService>(new LocationService());
@@ -30,6 +31,13 @@ export function MapView({ spots, highlightedSpotId, onMapClick, onMarkerClick }:
   const [nearbySpots, setNearbySpots] = useState<SpotWithDistance[]>([]);
   const [gpsError, setGpsError] = useState<string | null>(null);
   const [isGpsAvailable] = useState(() => !!navigator.geolocation);
+
+  // Long press state
+  const longPressTimerRef = useRef<number | undefined>(undefined);
+  const longPressStartRef = useRef<{ x: number; y: number } | null>(null);
+  const [longPressCoords, setLongPressCoords] = useState<[number, number] | null>(null);
+  const [showLongPressIndicator, setShowLongPressIndicator] = useState(false);
+  const [longPressIndicatorPos, setLongPressIndicatorPos] = useState<{ x: number; y: number } | null>(null);
 
   // Initialize map on mount
   useEffect(() => {
@@ -185,6 +193,75 @@ export function MapView({ spots, highlightedSpotId, onMapClick, onMarkerClick }:
     }
   };
 
+  // Long press handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!onLongPress) return;
+
+    const touch = e.touches[0];
+    const mapElement = document.getElementById('streetmark-map');
+    if (!mapElement) return;
+
+    // Store initial touch position
+    longPressStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+    };
+
+    // Show indicator at touch position
+    const rect = mapElement.getBoundingClientRect();
+    setLongPressIndicatorPos({
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    });
+    setShowLongPressIndicator(true);
+
+    // Start timer (500ms)
+    longPressTimerRef.current = window.setTimeout(() => {
+      // Get coordinates from map
+      const mapService = mapServiceRef.current;
+      if (!mapService) return;
+
+      const map = mapService.getMap();
+      if (!map) return;
+
+      const point = map.containerPointToLatLng([touch.clientX - rect.left, touch.clientY - rect.top]);
+      const coords: [number, number] = [point.lat, point.lng];
+
+      setLongPressCoords(coords);
+      setShowLongPressIndicator(false);
+
+      // Trigger callback
+      onLongPress(coords);
+    }, 500);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!longPressStartRef.current || !longPressTimerRef.current) return;
+
+    const touch = e.touches[0];
+    const dx = touch.clientX - longPressStartRef.current.x;
+    const dy = touch.clientY - longPressStartRef.current.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // Cancel if moved more than 10px (it's a pan/drag, not a long press)
+    if (distance > 10) {
+      window.clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = undefined;
+      longPressStartRef.current = null;
+      setShowLongPressIndicator(false);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    // Cancel timer if touch ended before 500ms
+    if (longPressTimerRef.current) {
+      window.clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = undefined;
+    }
+    longPressStartRef.current = null;
+    setShowLongPressIndicator(false);
+  };
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div
@@ -194,7 +271,21 @@ export function MapView({ spots, highlightedSpotId, onMapClick, onMarkerClick }:
           height: '100%',
           minHeight: '400px',
         }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       />
+
+      {/* Long Press Indicator */}
+      {showLongPressIndicator && longPressIndicatorPos && (
+        <div
+          className="long-press-indicator"
+          style={{
+            left: `${longPressIndicatorPos.x}px`,
+            top: `${longPressIndicatorPos.y}px`,
+          }}
+        />
+      )}
 
       {/* GPS FAB */}
       {isGpsAvailable && (
