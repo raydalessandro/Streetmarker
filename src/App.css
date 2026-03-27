@@ -253,8 +253,74 @@ button {
 
 /* === FILTERS === */
 .spot-filters {
-  padding: var(--space-4);
   border-bottom: 1px solid var(--border);
+}
+
+.filter-header-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-4);
+  background: var(--bg2);
+  border: none;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  gap: var(--space-2);
+}
+
+.filter-header-toggle:hover {
+  background: var(--bg3);
+}
+
+.filter-header-title {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-title);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--t1);
+}
+
+.filter-active-badge {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  background: var(--accent-dim);
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.filter-header-chevron {
+  transition: transform var(--transition-smooth);
+  color: var(--t2);
+  flex-shrink: 0;
+}
+
+.filter-header-chevron.expanded {
+  transform: rotate(180deg);
+}
+
+.filter-header-chevron.collapsed {
+  transform: rotate(0deg);
+}
+
+.filter-sections-container {
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height var(--transition-smooth), opacity var(--transition-smooth);
+  opacity: 1;
+  padding: var(--space-4);
+}
+
+.filter-sections-container.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding: 0;
 }
 
 .filter-section {

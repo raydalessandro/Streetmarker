@@ -18,10 +18,13 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
   const [timeTo, setTimeTo] = useState<string>('');
 
   // Collapsible sections state
-  const [isTypeExpanded, setIsTypeExpanded] = useState<boolean>(false);
-  const [isStatusExpanded, setIsStatusExpanded] = useState<boolean>(false);
-  const [isSecurityExpanded, setIsSecurityExpanded] = useState<boolean>(false);
-  const [isAvailabilityExpanded, setIsAvailabilityExpanded] = useState<boolean>(false);
+  const [isTypeExpanded, setIsTypeExpanded] = useState<boolean>(true); // Start expanded
+  const [isStatusExpanded, setIsStatusExpanded] = useState<boolean>(true);
+  const [isSecurityExpanded, setIsSecurityExpanded] = useState<boolean>(true);
+  const [isAvailabilityExpanded, setIsAvailabilityExpanded] = useState<boolean>(true);
+
+  // Auto-collapse state after "Applica Filtri"
+  const [isCollapsedAfterApply, setIsCollapsedAfterApply] = useState<boolean>(false);
 
   // Pending filters (not yet applied)
   const [pendingTypes, setPendingTypes] = useState<SpotType[]>([]);
@@ -31,12 +34,49 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
 
   const debounceTimerRef = useRef<number | undefined>(undefined);
 
+  // Count active filters (non-default values)
+  const countActiveFilters = () => {
+    let count = 0;
+    if (selectedTypes.length > 0) count++;
+    if (selectedStatuses.length > 0) count++;
+    if (selectedSecurityLevels.length > 0) count++;
+    if (availableNow) count++;
+    if (searchQuery.trim() !== '') count++;
+    return count;
+  };
+
   // Apply filters when "Applica Filtri" button clicked
   const handleApplyFilters = () => {
     setSelectedTypes(pendingTypes);
     setSelectedStatuses(pendingStatuses);
     setSelectedSecurityLevels(pendingSecurityLevels);
     setAvailableNow(pendingAvailableNow);
+
+    // Auto-collapse all sections after apply
+    setIsCollapsedAfterApply(true);
+    setIsTypeExpanded(false);
+    setIsStatusExpanded(false);
+    setIsSecurityExpanded(false);
+    setIsAvailabilityExpanded(false);
+  };
+
+  // Toggle header collapse state
+  const handleToggleCollapse = () => {
+    if (isCollapsedAfterApply) {
+      // Expand all sections
+      setIsCollapsedAfterApply(false);
+      setIsTypeExpanded(true);
+      setIsStatusExpanded(true);
+      setIsSecurityExpanded(true);
+      setIsAvailabilityExpanded(true);
+    } else {
+      // Collapse all sections
+      setIsCollapsedAfterApply(true);
+      setIsTypeExpanded(false);
+      setIsStatusExpanded(false);
+      setIsSecurityExpanded(false);
+      setIsAvailabilityExpanded(false);
+    }
   };
 
   // Notify parent when filters change
@@ -93,18 +133,41 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
     }
   };
 
+  const activeFiltersCount = countActiveFilters();
+
   return (
     <div className="spot-filters">
-      <div className="filter-section">
-        <h3>Search</h3>
-        <input
-          type="text"
-          placeholder="Search spots..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-input"
-        />
-      </div>
+      {/* Collapsible Header */}
+      <button
+        className="filter-header-toggle"
+        onClick={handleToggleCollapse}
+        aria-label="Toggle filters"
+      >
+        <span className="filter-header-title">Filtri</span>
+        {activeFiltersCount > 0 && (
+          <span className="filter-active-badge">{activeFiltersCount} filtri attivi</span>
+        )}
+        <svg
+          className={`filter-header-chevron ${isCollapsedAfterApply ? 'collapsed' : 'expanded'}`}
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+        >
+          <polyline points="6 9 12 15 18 9" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
+      <div className={`filter-sections-container ${isCollapsedAfterApply ? 'collapsed' : ''}`}>
+        <div className="filter-section">
+          <h3>Search</h3>
+          <input
+            type="text"
+            placeholder="Search spots..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+        </div>
 
       <div className="filter-section collapsible">
         <button
@@ -295,11 +358,12 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
         </div>
       </div>
 
-      {/* Apply Filters Button - Sticky */}
-      <div className="filter-apply-container">
-        <button className="filter-apply-btn" onClick={handleApplyFilters}>
-          Applica Filtri
-        </button>
+        {/* Apply Filters Button - Sticky */}
+        <div className="filter-apply-container">
+          <button className="filter-apply-btn" onClick={handleApplyFilters}>
+            Applica Filtri
+          </button>
+        </div>
       </div>
     </div>
   );
