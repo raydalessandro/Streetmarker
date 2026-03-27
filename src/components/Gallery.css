@@ -6,8 +6,10 @@
   height: 100%;
   width: 100%;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   background: var(--bg);
-  padding-bottom: 72px; /* Space for bottom nav */
+  padding-bottom: 80px; /* Space for bottom nav */
 }
 
 .gallery-header {
@@ -72,48 +74,37 @@
   color: var(--t3);
 }
 
-/* Gallery Grid — Masonry-like with 3px gap */
+/* Gallery Grid - Instagram 3-col with featured 2x2 */
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 3px;
+  gap: 2px;
   padding: 0;
-}
-
-@media (min-width: 768px) {
-  .gallery-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .gallery-grid {
-    grid-template-columns: repeat(5, 1fr);
-  }
 }
 
 /* Gallery Item */
 .gallery-item {
   position: relative;
-  aspect-ratio: 1;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   cursor: pointer;
-  transition: transform var(--transition-fast);
   background: var(--bg3);
 }
 
-.gallery-item:hover {
-  transform: scale(1.03);
-  z-index: 1;
+/* Featured item - occupies 2x2 grid cells */
+.gallery-item.featured {
+  grid-column: span 2;
+  grid-row: span 2;
 }
 
 .gallery-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-/* Overlay on hover — gradient bottom-up */
+/* Overlay on tap/hover - gradient bottom-up */
 .gallery-item-overlay {
   position: absolute;
   bottom: 0;
@@ -123,10 +114,23 @@
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
   opacity: 0;
   transition: opacity var(--transition-fast);
+  pointer-events: none;
 }
 
-.gallery-item:hover .gallery-item-overlay {
+/* Show overlay on tap (mobile) */
+.gallery-item:active .gallery-item-overlay {
   opacity: 1;
+}
+
+/* Show overlay on hover (desktop) */
+@media (hover: hover) {
+  .gallery-item:hover .gallery-item-overlay {
+    opacity: 1;
+  }
+
+  .gallery-item:hover {
+    z-index: 1;
+  }
 }
 
 .gallery-item-title {

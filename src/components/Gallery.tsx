@@ -57,19 +57,22 @@ export function Gallery({ spots, onSpotClick }: GalleryProps) {
         </div>
       ) : (
         <div className="gallery-grid">
-          {allPhotos.map((item, idx) => (
-            <div
-              key={`${item.spot.id}-${item.index}-${idx}`}
-              className="gallery-item"
-              onClick={() => handlePhotoClick(item)}
-            >
-              <img src={item.photo} alt={getSpotName(item.spot)} />
-              <div className="gallery-item-overlay">
-                <div className="gallery-item-title">{getSpotName(item.spot)}</div>
-                <div className="gallery-item-type">{item.spot.type}</div>
+          {allPhotos.map((item, idx) => {
+            const isFeatured = idx % 6 === 0;
+            return (
+              <div
+                key={`${item.spot.id}-${item.index}-${idx}`}
+                className={`gallery-item ${isFeatured ? 'featured' : ''}`}
+                onClick={() => handlePhotoClick(item)}
+              >
+                <img src={item.photo} alt={getSpotName(item.spot)} loading="lazy" />
+                <div className="gallery-item-overlay">
+                  <div className="gallery-item-title">{getSpotName(item.spot)}</div>
+                  <div className={`gallery-item-type ${item.spot.type}`}>{item.spot.type}</div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
