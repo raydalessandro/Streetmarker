@@ -1,5 +1,5 @@
 // src/services/SpotService.ts
-import type { Spot, SpotType, SpotStatus, SecurityLevel } from '../types/spot';
+import type { Spot, SpotType, SpotStatus, SecurityLevel, TemporaryState, TemporaryStatus } from '../types/spot';
 import { isValidCoords, isValidTimeRange } from '../utils/validation';
 
 export interface SpotFilters {
@@ -176,5 +176,216 @@ export class SpotService {
 
       return false;
     });
+  }
+
+  /**
+   * Calculate Haversine distance between two coordinates in km
+   */
+  private haversineDistance(coords1: [number, number], coords2: [number, number]): number {
+    const R = 6371; // Earth radius in km
+    const dLat = (coords2[0] - coords1[0]) * Math.PI / 180;
+    const dLon = (coords2[1] - coords1[1]) * Math.PI / 180;
+    const lat1 = coords1[0] * Math.PI / 180;
+    const lat2 = coords2[0] * Math.PI / 180;
+
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+  }
+
+  /**
+   * Convert time string (HH:MM) to minutes since midnight
+   */
+  private timeToMinutes(time: string): number {
+    const [h, m] = time.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  /**
+   * Convert minutes since midnight to time string (HH:MM)
+   */
+  private minutesToTime(minutes: number): string {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+  }
+
+  /**
+   * Find best time window for a spot based on nearby spots of same type
+   * Returns time window with highest activity in the area, or null if insufficient data
+   */
+  getBestTimeWindow(spot: Spot, allSpots: Spot[]): { from: string; to: string; spotCount: number } | null {
+    // 1. Filter spots: same type + within 1km radius + have availability data
+    const nearbySpots = allSpots.filter(s =>
+      s.type === spot.type &&
+      s.id !== spot.id &&
+      this.haversineDistance(spot.coords, s.coords) < 1.0 &&
+      s.availability.length > 0
+    );
+
+    // Need at least 2 nearby spots (plus current spot = 3 total)
+    if (nearbySpots.length < 2) {
+      return null;
+    }
+
+    // 2. Collect all availability ranges from current spot + nearby spots
+    const allRanges = [spot, ...nearbySpots]
+      .flatMap(s => s.availability.map(avail => ({
+        from: this.timeToMinutes(avail.from),
+        to: this.timeToMinutes(avail.to),
+        overnight: this.timeToMinutes(avail.from) > this.timeToMinutes(avail.to),
+      })));
+
+    if (allRanges.length === 0) {
+      return null;
+    }
+
+    // 3. Find the time window with maximum overlaps
+    // Create events for each range start/end
+    interface TimeEvent {
+      time: number;
+      type: 'start' | 'end';
+    }
+
+    const events: TimeEvent[] = [];
+    allRanges.forEach(range => {
+      if (range.overnight) {
+        // Overnight range: split into two ranges (start->midnight, midnight->end)
+        events.push({ time: range.from, type: 'start' });
+        events.push({ time: 1440, type: 'end' }); // End at midnight (1440 minutes)
+        events.push({ time: 0, type: 'start' }); // Start at midnight (0 minutes)
+        events.push({ time: range.to, type: 'end' });
+      } else {
+        events.push({ time: range.from, type: 'start' });
+        events.push({ time: range.to, type: 'end' });
+      }
+    });
+
+    // Sort events by time
+    events.sort((a, b) => a.time - b.time);
+
+    // Sweep through events to find window with max concurrent ranges
+    let currentCount = 0;
+    let maxCount = 0;
+    let maxStart = 0;
+    let maxEnd = 0;
+    let windowStart = 0;
+
+    for (let i = 0; i < events.length; i++) {
+      const event = events[i];
+
+      if (event.type === 'start') {
+        currentCount++;
+        if (currentCount > maxCount) {
+          maxCount = currentCount;
+          windowStart = event.time;
+        }
+      } else {
+        if (currentCount === maxCount && maxCount > 0) {
+          // End of max window
+          maxStart = windowStart;
+          maxEnd = event.time;
+        }
+        currentCount--;
+      }
+    }
+
+    // 4. Return window only if:
+    //    - At least 3 spots overlap (including current spot)
+    //    - Window is at least 2 hours (120 minutes)
+    const windowDuration = maxEnd - maxStart;
+    if (maxCount < 3 || windowDuration < 120) {
+      return null;
+    }
+
+    return {
+      from: this.minutesToTime(maxStart),
+      to: this.minutesToTime(maxEnd),
+      spotCount: maxCount,
+    };
+  }
+
+  /**
+   * Check if temporary status is still valid (not expired)
+   */
+  isTemporaryStatusValid(spot: Spot): boolean {
+    if (!spot.temporaryStatus) return false;
+    return Date.now() < spot.temporaryStatus.expiresAt;
+  }
+
+  /**
+   * Set temporary status on a spot
+   * Expiry is 48 hours from now
+   */
+  setTemporaryStatus(spot: Spot, state: TemporaryState, note?: string): Spot {
+    const now = Date.now();
+    const expiresAt = now + (48 * 60 * 60 * 1000); // 48 hours in milliseconds
+
+    return {
+      ...spot,
+      temporaryStatus: {
+        state,
+        setAt: now,
+        expiresAt,
+        note,
+      },
+      updatedAt: now,
+    };
+  }
+
+  /**
+   * Remove temporary status from a spot
+   */
+  removeTemporaryStatus(spot: Spot): Spot {
+    const { temporaryStatus, ...spotWithoutStatus } = spot;
+    return {
+      ...spotWithoutStatus,
+      updatedAt: Date.now(),
+    };
+  }
+
+  /**
+   * Get emoji for temporary state
+   */
+  getTemporaryStateEmoji(state: TemporaryState): string {
+    switch (state) {
+      case 'hot': return '🔥';
+      case 'cold': return '❄️';
+      case 'burned': return '💀';
+      default: return '';
+    }
+  }
+
+  /**
+   * Get color for temporary state
+   */
+  getTemporaryStateColor(state: TemporaryState): string {
+    switch (state) {
+      case 'hot': return 'var(--accent)';
+      case 'cold': return 'var(--blue)';
+      case 'burned': return 'var(--red)';
+      default: return 'var(--t3)';
+    }
+  }
+
+  /**
+   * Format relative timestamp (e.g., "3h ago", "2 days ago")
+   */
+  formatRelativeTime(timestamp: number): string {
+    const now = Date.now();
+    const diff = now - timestamp;
+    const minutes = Math.floor(diff / (60 * 1000));
+    const hours = Math.floor(diff / (60 * 60 * 1000));
+    const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+
+    if (minutes < 60) {
+      return `${minutes}m ago`;
+    } else if (hours < 24) {
+      return `${hours}h ago`;
+    } else {
+      return `${days}d ago`;
+    }
   }
 }

@@ -10,6 +10,15 @@ export interface TimeRange {
   to: string;   // HH:MM format (24h)
 }
 
+export type TemporaryState = 'hot' | 'cold' | 'burned';
+
+export interface TemporaryStatus {
+  state: TemporaryState;
+  setAt: number;       // Unix timestamp
+  expiresAt: number;   // Unix timestamp (setAt + 48h)
+  note?: string;       // optional user note
+}
+
 export interface Spot {
   id: string;                    // UUID v4
   coords: [number, number];      // [lat, lng]
@@ -21,6 +30,7 @@ export interface Spot {
   notes: string;
   photos?: string[];             // base64 or blob URLs (optional)
   isFavorite?: boolean;          // marked as favorite for personal gallery
+  temporaryStatus?: TemporaryStatus; // temporary state (hot/cold/burned) with expiry
   createdAt: number;             // Unix timestamp
   updatedAt: number;             // Unix timestamp
 }

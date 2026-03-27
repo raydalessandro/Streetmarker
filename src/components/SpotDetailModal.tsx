@@ -1,17 +1,43 @@
 // src/components/SpotDetailModal.tsx
-import type { Spot } from '../types/spot';
+import { useMemo, useState } from 'react';
+import type { Spot, TemporaryState } from '../types/spot';
+import { SpotService } from '../services/SpotService';
 import './SpotDetailModal.css';
 
 interface SpotDetailModalProps {
   spot: Spot;
+  allSpots?: Spot[]; // All spots for pattern analysis
   onClose: () => void;
   onViewOnMap?: () => void;
   onEdit: () => void;
   onOpenInMaps: () => void;
   onToggleFavorite: () => void;
+  onUpdateSpot: (spot: Spot) => void;
 }
 
-export function SpotDetailModal({ spot, onClose, onViewOnMap, onEdit, onOpenInMaps, onToggleFavorite }: SpotDetailModalProps) {
+export function SpotDetailModal({ spot, allSpots = [], onClose, onViewOnMap, onEdit, onOpenInMaps, onToggleFavorite, onUpdateSpot }: SpotDetailModalProps) {
+  const spotService = useMemo(() => new SpotService(), []);
+  const [note, setNote] = useState<string>('');
+
+  // Calculate best time window for this spot
+  const bestTimeWindow = useMemo(() => {
+    if (allSpots.length === 0) return null;
+    return spotService.getBestTimeWindow(spot, allSpots);
+  }, [spot, allSpots, spotService]);
+
+  // Check if temporary status is valid
+  const hasValidTemporaryStatus = spotService.isTemporaryStatusValid(spot);
+
+  const handleSetTemporaryStatus = (state: TemporaryState) => {
+    const updatedSpot = spotService.setTemporaryStatus(spot, state, note || undefined);
+    onUpdateSpot(updatedSpot);
+    setNote(''); // Clear note input
+  };
+
+  const handleRemoveTemporaryStatus = () => {
+    const updatedSpot = spotService.removeTemporaryStatus(spot);
+    onUpdateSpot(updatedSpot);
+  };
   const getSpotName = (spot: Spot) => {
     return spot.owner || `${spot.type.charAt(0).toUpperCase() + spot.type.slice(1)} Spot`;
   };
@@ -74,6 +100,95 @@ export function SpotDetailModal({ spot, onClose, onViewOnMap, onEdit, onOpenInMa
             {spot.notes && (
               <p className="spot-detail-notes">{spot.notes}</p>
             )}
+
+            {/* Availability */}
+            {spot.availability && spot.availability.length > 0 && (
+              <div className="spot-detail-availability">
+                <div className="spot-detail-availability-label">Orari:</div>
+                {spot.availability.map((range, idx) => (
+                  <span key={idx} className="spot-detail-availability-badge">
+                    {range.from} - {range.to}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Best Time Window Pattern */}
+            {bestTimeWindow && (
+              <div className="spot-detail-pattern">
+                <div className="spot-detail-pattern-icon">📊</div>
+                <div className="spot-detail-pattern-content">
+                  <div className="spot-detail-pattern-text">
+                    La zona è più attiva tra le {bestTimeWindow.from} e le {bestTimeWindow.to}
+                  </div>
+                  <div className="spot-detail-pattern-subtext">
+                    Basato su {bestTimeWindow.spotCount} spot nelle vicinanze
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Temporary Status Section */}
+            <div className="spot-detail-temporary-status">
+              <h3 className="temporary-status-title">Stato Attuale</h3>
+
+              {hasValidTemporaryStatus && spot.temporaryStatus ? (
+                <div className="temporary-status-active">
+                  <div className="temporary-status-badge">
+                    <span className="temporary-status-emoji">
+                      {spotService.getTemporaryStateEmoji(spot.temporaryStatus.state)}
+                    </span>
+                    <span className="temporary-status-label">{spot.temporaryStatus.state}</span>
+                    <span className="temporary-status-time">
+                      {spotService.formatRelativeTime(spot.temporaryStatus.setAt)}
+                    </span>
+                  </div>
+                  {spot.temporaryStatus.note && (
+                    <p className="temporary-status-note">"{spot.temporaryStatus.note}"</p>
+                  )}
+                  <button
+                    className="temporary-status-remove"
+                    onClick={handleRemoveTemporaryStatus}
+                  >
+                    Rimuovi stato
+                  </button>
+                </div>
+              ) : (
+                <div className="temporary-status-controls">
+                  <div className="temporary-status-buttons">
+                    <button
+                      className="temporary-status-btn hot"
+                      onClick={() => handleSetTemporaryStatus('hot')}
+                    >
+                      <span className="temporary-status-btn-emoji">🔥</span>
+                      <span className="temporary-status-btn-label">Caldo</span>
+                    </button>
+                    <button
+                      className="temporary-status-btn cold"
+                      onClick={() => handleSetTemporaryStatus('cold')}
+                    >
+                      <span className="temporary-status-btn-emoji">❄️</span>
+                      <span className="temporary-status-btn-label">Freddo</span>
+                    </button>
+                    <button
+                      className="temporary-status-btn burned"
+                      onClick={() => handleSetTemporaryStatus('burned')}
+                    >
+                      <span className="temporary-status-btn-emoji">💀</span>
+                      <span className="temporary-status-btn-label">Bruciato</span>
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    className="temporary-status-note-input"
+                    placeholder="Nota opzionale..."
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                  />
+                  <p className="temporary-status-hint">Scade automaticamente dopo 48h</p>
+                </div>
+              )}
+            </div>
 
             {/* Tags */}
             <div className="spot-detail-tags">
