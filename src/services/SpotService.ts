@@ -1,5 +1,5 @@
 // src/services/SpotService.ts
-import type { Spot, SpotType, SpotStatus, SecurityLevel, TemporaryState, TemporaryStatus } from '../types/spot';
+import type { Spot, SpotType, SpotStatus, SecurityLevel, TemporaryState } from '../types/spot';
 import { isValidCoords, isValidTimeRange } from '../utils/validation';
 
 export interface SpotFilters {

@@ -14,9 +14,10 @@ interface SpotListViewProps {
   onFilterChange: (filters: SpotFiltersType) => void;
   onSearchChange: (query: string) => void;
   onToggleFavorite: (spot: Spot) => void;
+  onUpdateSpot: (spot: Spot) => void;
 }
 
-export function SpotListView({ spots, onSpotClick, onEdit, onFilterChange, onSearchChange, onToggleFavorite }: SpotListViewProps) {
+export function SpotListView({ spots, onSpotClick, onEdit, onFilterChange, onSearchChange, onToggleFavorite, onUpdateSpot }: SpotListViewProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
 
@@ -201,6 +202,7 @@ export function SpotListView({ spots, onSpotClick, onEdit, onFilterChange, onSea
             onToggleFavorite(selectedSpot);
             setSelectedSpot(null);
           }}
+          onUpdateSpot={onUpdateSpot}
         />
       )}
     </div>

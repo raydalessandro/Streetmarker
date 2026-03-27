@@ -1,0 +1,143 @@
+/* src/components/QRScannerModal.css */
+
+.qr-scanner-modal {
+  position: relative;
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.qr-scanner-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+  z-index: 10;
+}
+
+.qr-scanner-close:hover {
+  background: var(--bg-tertiary);
+}
+
+.qr-scanner-content {
+  padding: 24px;
+}
+
+.qr-scanner-content h2 {
+  margin: 0 0 20px 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.qr-scanner-progress {
+  margin-bottom: 20px;
+}
+
+.qr-scanner-progress-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.qr-scanner-progress-bar {
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.qr-scanner-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.qr-scanner-video {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  min-height: 300px;
+  margin-bottom: 20px;
+}
+
+.qr-scanner-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 20px;
+  color: #ef4444;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+}
+
+.qr-scanner-manual {
+  border-top: 1px solid var(--bg-tertiary);
+  padding-top: 20px;
+}
+
+.qr-scanner-manual label {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.qr-scanner-manual textarea {
+  width: 100%;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  color: var(--text-primary);
+  resize: vertical;
+  margin-bottom: 12px;
+}
+
+.qr-scanner-manual textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.qr-scanner-submit {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.qr-scanner-submit:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.qr-scanner-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

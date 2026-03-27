@@ -46,10 +46,11 @@ describe('SpotService - Temporary Status', () => {
     });
 
     it('updates updatedAt timestamp', () => {
-      const before = mockSpot.updatedAt;
       const updatedSpot = service.setTemporaryStatus(mockSpot, 'cold');
 
-      expect(updatedSpot.updatedAt).toBeGreaterThan(before);
+      // Should use mocked Date.now() value
+      expect(updatedSpot.updatedAt).toBe(1609459200000);
+      expect(updatedSpot.updatedAt).toBeGreaterThanOrEqual(mockSpot.updatedAt);
     });
 
     it('handles all state types', () => {

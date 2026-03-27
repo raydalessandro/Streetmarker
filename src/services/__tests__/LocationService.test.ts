@@ -125,6 +125,7 @@ describe('LocationService', () => {
         getCurrentPosition: vi.fn((success, error) =>
           error({
             code: 1, // PERMISSION_DENIED
+            PERMISSION_DENIED: 1,
             message: 'User denied geolocation',
           })
         ),
@@ -144,6 +145,7 @@ describe('LocationService', () => {
         getCurrentPosition: vi.fn((success, error) =>
           error({
             code: 3, // TIMEOUT
+            TIMEOUT: 3,
             message: 'Timeout',
           })
         ),

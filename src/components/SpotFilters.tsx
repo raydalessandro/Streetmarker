@@ -32,7 +32,7 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
   const [pendingSecurityLevels, setPendingSecurityLevels] = useState<SecurityLevel[]>([]);
   const [pendingAvailableNow, setPendingAvailableNow] = useState<boolean>(false);
 
-  const debounceTimerRef = useRef<number | undefined>(undefined);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   // Count active filters (non-default values)
   const countActiveFilters = () => {

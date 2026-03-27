@@ -183,6 +183,21 @@ function App() {
   };
 
   /**
+   * Handle spot update (e.g., temporary status change) from detail modal
+   */
+  const handleUpdateSpot = async (updatedSpot: Spot) => {
+    try {
+      await storageService.updateSpot(updatedSpot);
+      await refreshSpots();
+      // Update selectedSpot to reflect changes in modal
+      setSelectedSpot(updatedSpot);
+    } catch (error) {
+      console.error('Failed to update spot:', error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Failed to update spot'}`);
+    }
+  };
+
+  /**
    * Handle spot edit from list
    */
   const handleEdit = (spot: Spot) => {
@@ -405,6 +420,7 @@ function App() {
             onFilterChange={handleFilterChange}
             onSearchChange={handleSearchChange}
             onToggleFavorite={handleToggleFavoriteFromList}
+            onUpdateSpot={handleUpdateSpot}
           />
         )}
 
@@ -437,6 +453,7 @@ function App() {
       {isDetailModalOpen && selectedSpot && (
         <SpotDetailModal
           spot={selectedSpot}
+          allSpots={filteredSpots}
           onClose={handleDetailModalClose}
           onViewOnMap={currentView !== 'map' ? () => handleViewSpotOnMap(selectedSpot) : undefined}
           onEdit={handleEditFromModal}
@@ -445,6 +462,7 @@ function App() {
             window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
           }}
           onToggleFavorite={handleToggleFavorite}
+          onUpdateSpot={handleUpdateSpot}
         />
       )}
 

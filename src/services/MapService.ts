@@ -27,6 +27,7 @@ export class MapService {
   private map: L.Map | null = null;
   private markers: Map<string, L.Marker> = new Map();
   private clusterGroup: L.MarkerClusterGroup | null = null;
+  private heatmapCircles: L.Circle[] = [];
 
   /**
    * Initialize Leaflet map
@@ -310,9 +311,107 @@ export class MapService {
   }
 
   /**
+   * Calculate Haversine distance between two coordinates in km
+   */
+  private haversineDistance(coords1: [number, number], coords2: [number, number]): number {
+    const R = 6371; // Earth radius in km
+    const dLat = (coords2[0] - coords1[0]) * Math.PI / 180;
+    const dLon = (coords2[1] - coords1[1]) * Math.PI / 180;
+    const lat1 = coords1[0] * Math.PI / 180;
+    const lat2 = coords2[0] * Math.PI / 180;
+
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+  }
+
+  /**
+   * Calculate density of spots in 500m radius
+   */
+  private calculateDensity(spot: Spot, allSpots: Spot[]): number {
+    return allSpots.filter(s =>
+      s.id !== spot.id &&
+      this.haversineDistance(spot.coords, s.coords) < 0.5
+    ).length;
+  }
+
+  /**
+   * Get color based on density level
+   */
+  private getDensityColor(density: number): string {
+    if (density >= 5) return '#c8ff00';  // accent (high density)
+    if (density >= 2) return '#6db8d1';  // mix (medium density)
+    return '#3db4f2';                     // blue (low density)
+  }
+
+  /**
+   * Get opacity based on density level
+   */
+  private getDensityOpacity(density: number): number {
+    if (density >= 5) return 0.25;
+    if (density >= 2) return 0.18;
+    return 0.12;
+  }
+
+  /**
+   * Draw heatmap overlay on the map
+   * @param spots - All spots to visualize
+   */
+  drawHeatmap(spots: Spot[]): void {
+    if (!this.map) {
+      throw new Error('Map not initialized. Call initMap() first.');
+    }
+
+    // Clear existing heatmap
+    this.clearHeatmap();
+
+    // Limit to 100 circles for performance
+    const spotsToVisualize = spots.length > 100
+      ? spots.slice().sort((a, b) => {
+          const densityA = this.calculateDensity(a, spots);
+          const densityB = this.calculateDensity(b, spots);
+          return densityB - densityA; // Sort by density descending
+        }).slice(0, 100)
+      : spots;
+
+    // Draw circles for each spot
+    spotsToVisualize.forEach(spot => {
+      const density = this.calculateDensity(spot, spots);
+      const color = this.getDensityColor(density);
+      const opacity = this.getDensityOpacity(density);
+
+      const circle = L.circle(spot.coords, {
+        radius: 200, // meters
+        fillColor: color,
+        fillOpacity: opacity,
+        stroke: false,
+        interactive: false,
+      });
+
+      circle.addTo(this.map!);
+      this.heatmapCircles.push(circle);
+    });
+  }
+
+  /**
+   * Clear heatmap overlay
+   */
+  clearHeatmap(): void {
+    if (!this.map) return;
+
+    this.heatmapCircles.forEach(circle => {
+      circle.remove();
+    });
+    this.heatmapCircles = [];
+  }
+
+  /**
    * Cleanup and destroy map instance
    */
   destroy(): void {
+    this.clearHeatmap();
     if (this.map) {
       this.map.remove();
       this.map = null;

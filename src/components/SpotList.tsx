@@ -4,11 +4,11 @@ import type { Spot } from '../types/spot';
 export interface SpotListProps {
   spots: Spot[];
   onSpotClick?: (spot: Spot) => void;
-  onEdit: (spot: Spot) => void;
-  onDelete: (id: string) => void;
+  onEdit?: (spot: Spot) => void;
+  onDelete?: (id: string) => void;
 }
 
-export function SpotList({ spots, onSpotClick, onEdit, onDelete }: SpotListProps) {
+export function SpotList({ spots, onSpotClick }: SpotListProps) {
   if (spots.length === 0) {
     return (
       <div className="spot-list-empty">

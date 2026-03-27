@@ -27,15 +27,16 @@ export function MapView({ spots, highlightedSpotId, onMapClick, onMarkerClick, o
   const spotServiceRef = useRef<SpotService>(new SpotService());
   const userMarkerRef = useRef<L.Marker | null>(null);
 
-  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [_userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [nearbySpots, setNearbySpots] = useState<SpotWithDistance[]>([]);
   const [gpsError, setGpsError] = useState<string | null>(null);
   const [isGpsAvailable] = useState(() => !!navigator.geolocation);
+  const [isHeatmapActive, setIsHeatmapActive] = useState(false);
 
   // Long press state
   const longPressTimerRef = useRef<number | undefined>(undefined);
   const longPressStartRef = useRef<{ x: number; y: number } | null>(null);
-  const [longPressCoords, setLongPressCoords] = useState<[number, number] | null>(null);
+  const [_longPressCoords, setLongPressCoords] = useState<[number, number] | null>(null);
   const [showLongPressIndicator, setShowLongPressIndicator] = useState(false);
   const [longPressIndicatorPos, setLongPressIndicatorPos] = useState<{ x: number; y: number } | null>(null);
 
@@ -116,6 +117,18 @@ export function MapView({ spots, highlightedSpotId, onMapClick, onMarkerClick, o
     spotIdsRef.current = currentSpotIds;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spots, highlightedSpotId]); // Re-run when highlightedSpotId changes
+
+  // Update heatmap when toggle changes or spots change
+  useEffect(() => {
+    const mapService = mapServiceRef.current;
+    if (!mapService) return;
+
+    if (isHeatmapActive) {
+      mapService.drawHeatmap(spots);
+    } else {
+      mapService.clearHeatmap();
+    }
+  }, [isHeatmapActive, spots]);
 
   // Handle GPS FAB click
   const handleGpsClick = async () => {
@@ -287,23 +300,37 @@ export function MapView({ spots, highlightedSpotId, onMapClick, onMarkerClick, o
         />
       )}
 
-      {/* GPS FAB */}
-      {isGpsAvailable && (
+      {/* Map Controls */}
+      <div className="map-controls">
+        {/* Heatmap Toggle */}
         <button
-          className="gps-fab"
-          onClick={handleGpsClick}
-          aria-label="Get current location"
+          className={`map-control-btn ${isHeatmapActive ? 'active' : ''}`}
+          onClick={() => setIsHeatmapActive(!isHeatmapActive)}
+          aria-label="Toggle heatmap"
+          title="Toggle density heatmap"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <circle cx="12" cy="12" r="3"></circle>
-            <line x1="12" y1="2" x2="12" y2="6"></line>
-            <line x1="12" y1="18" x2="12" y2="22"></line>
-            <line x1="2" y1="12" x2="6" y2="12"></line>
-            <line x1="18" y1="12" x2="22" y2="12"></line>
-          </svg>
+          🔥
         </button>
-      )}
+
+        {/* GPS FAB */}
+        {isGpsAvailable && (
+          <button
+            className="map-control-btn"
+            onClick={handleGpsClick}
+            aria-label="Get current location"
+            title="Find my location"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="3"></circle>
+              <line x1="12" y1="2" x2="12" y2="6"></line>
+              <line x1="12" y1="18" x2="12" y2="22"></line>
+              <line x1="2" y1="12" x2="6" y2="12"></line>
+              <line x1="18" y1="12" x2="22" y2="12"></line>
+            </svg>
+          </button>
+        )}
+      </div>
 
       {/* GPS Error Toast */}
       {gpsError && (
