@@ -12,9 +12,10 @@ interface SpotListViewProps {
   onDelete: (id: string) => void;
   onFilterChange: (filters: SpotFiltersType) => void;
   onSearchChange: (query: string) => void;
+  onToggleFavorite: (spot: Spot) => void;
 }
 
-export function SpotListView({ spots, onSpotClick, onEdit, onFilterChange, onSearchChange }: SpotListViewProps) {
+export function SpotListView({ spots, onSpotClick, onEdit, onFilterChange, onSearchChange, onToggleFavorite }: SpotListViewProps) {
   const [sortBy, setSortBy] = useState<'recent' | 'name' | 'type' | 'status'>('recent');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
@@ -296,6 +297,18 @@ export function SpotListView({ spots, onSpotClick, onEdit, onFilterChange, onSea
                       <line x1="16" y1="6" x2="16" y2="22"></line>
                     </svg>
                     Open in Maps
+                  </button>
+                  <button
+                    className={`spot-detail-action-btn ${selectedSpot.isFavorite ? 'favorite-active' : 'secondary'}`}
+                    onClick={() => {
+                      onToggleFavorite(selectedSpot);
+                      setSelectedSpot(null);
+                    }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill={selectedSpot.isFavorite ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    {selectedSpot.isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
                   </button>
                 </div>
               </div>

@@ -196,6 +196,49 @@ function App() {
   };
 
   /**
+   * Handle toggle favorite
+   */
+  const handleToggleFavorite = async () => {
+    if (!selectedSpot) return;
+
+    try {
+      const updatedSpot: Spot = {
+        ...selectedSpot,
+        isFavorite: !selectedSpot.isFavorite,
+        updatedAt: Date.now(),
+      };
+
+      await storageService.updateSpot(updatedSpot);
+      await refreshSpots();
+
+      // Update selectedSpot state to reflect the change in modal
+      setSelectedSpot(updatedSpot);
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Failed to update favorite'}`);
+    }
+  };
+
+  /**
+   * Handle toggle favorite from SpotListView
+   */
+  const handleToggleFavoriteFromList = async (spot: Spot) => {
+    try {
+      const updatedSpot: Spot = {
+        ...spot,
+        isFavorite: !spot.isFavorite,
+        updatedAt: Date.now(),
+      };
+
+      await storageService.updateSpot(updatedSpot);
+      await refreshSpots();
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Failed to update favorite'}`);
+    }
+  };
+
+  /**
    * Handle filter change
    */
   const handleFilterChange = (newFilters: SpotFiltersType) => {
@@ -330,6 +373,7 @@ function App() {
             onDelete={handleDelete}
             onFilterChange={handleFilterChange}
             onSearchChange={handleSearchChange}
+            onToggleFavorite={handleToggleFavoriteFromList}
           />
         )}
 
@@ -369,6 +413,7 @@ function App() {
             const [lat, lng] = selectedSpot.coords;
             window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
           }}
+          onToggleFavorite={handleToggleFavorite}
         />
       )}
 

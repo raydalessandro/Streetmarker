@@ -580,6 +580,18 @@
   transform: translateY(-2px);
 }
 
+.spot-detail-action-btn.favorite-active {
+  background: var(--neon-pink);
+  color: var(--text-primary);
+  border-color: var(--neon-pink);
+}
+
+.spot-detail-action-btn.favorite-active:hover {
+  background: #ff0080;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 0, 110, 0.5);
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
