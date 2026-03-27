@@ -357,6 +357,7 @@ function App() {
               />
               <SpotList
                 spots={filteredSpots}
+                onSpotClick={handleViewSpotOnMap}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
               />

@@ -3,11 +3,12 @@ import type { Spot } from '../types/spot';
 
 export interface SpotListProps {
   spots: Spot[];
+  onSpotClick?: (spot: Spot) => void;
   onEdit: (spot: Spot) => void;
   onDelete: (id: string) => void;
 }
 
-export function SpotList({ spots, onEdit, onDelete }: SpotListProps) {
+export function SpotList({ spots, onSpotClick, onEdit, onDelete }: SpotListProps) {
   if (spots.length === 0) {
     return (
       <div className="spot-list-empty">
@@ -19,7 +20,14 @@ export function SpotList({ spots, onEdit, onDelete }: SpotListProps) {
   return (
     <div className="spot-list">
       {spots.map((spot) => (
-        <div key={spot.id} className="spot-card spot-list-item" data-spot-id={spot.id}>
+        <div
+          key={spot.id}
+          className="spot-card spot-list-item"
+          data-spot-id={spot.id}
+          data-testid={`spot-card-${spot.id}`}
+          onClick={() => onSpotClick?.(spot)}
+          style={{ cursor: onSpotClick ? 'pointer' : 'default' }}
+        >
           <div className="spot-header">
             <span className={`spot-type type-${spot.type}`}>{spot.type}</span>
             <span className={`spot-status status-${spot.status}`}>{spot.status}</span>
@@ -45,14 +53,20 @@ export function SpotList({ spots, onEdit, onDelete }: SpotListProps) {
 
           <div className="spot-actions">
             <button
-              onClick={() => onEdit(spot)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(spot);
+              }}
               className="btn-edit"
               aria-label="Edit spot"
             >
               Edit
             </button>
             <button
-              onClick={() => onDelete(spot.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(spot.id);
+              }}
               className="btn-delete"
               aria-label="Delete spot"
             >
