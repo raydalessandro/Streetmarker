@@ -1,6 +1,8 @@
 // src/components/SpotListView.tsx
 import { useState } from 'react';
 import type { Spot } from '../types/spot';
+import { SpotFilters } from './SpotFilters';
+import type { SpotFilters as SpotFiltersType } from '../services/SpotService';
 import './SpotListView.css';
 
 interface SpotListViewProps {
@@ -8,10 +10,14 @@ interface SpotListViewProps {
   onSpotClick: (spot: Spot) => void;
   onEdit: (spot: Spot) => void;
   onDelete: (id: string) => void;
+  onFilterChange: (filters: SpotFiltersType) => void;
+  onSearchChange: (query: string) => void;
 }
 
-export function SpotListView({ spots, onSpotClick, onEdit, onDelete }: SpotListViewProps) {
+export function SpotListView({ spots, onSpotClick, onEdit, onFilterChange, onSearchChange }: SpotListViewProps) {
   const [sortBy, setSortBy] = useState<'recent' | 'name' | 'type' | 'status'>('recent');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
 
   const getSortedSpots = () => {
     const sorted = [...spots];
@@ -51,10 +57,28 @@ export function SpotListView({ spots, onSpotClick, onEdit, onDelete }: SpotListV
     }
   };
 
-  const handleDelete = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    if (window.confirm('Are you sure you want to delete this spot?')) {
-      onDelete(id);
+  const handleCardClick = (spot: Spot) => {
+    setSelectedSpot(spot);
+  };
+
+  const handleViewOnMap = () => {
+    if (selectedSpot) {
+      onSpotClick(selectedSpot);
+      setSelectedSpot(null);
+    }
+  };
+
+  const handleEdit = () => {
+    if (selectedSpot) {
+      onEdit(selectedSpot);
+      setSelectedSpot(null);
+    }
+  };
+
+  const handleOpenInMaps = () => {
+    if (selectedSpot) {
+      const [lat, lng] = selectedSpot.coords;
+      window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
     }
   };
 
@@ -62,7 +86,19 @@ export function SpotListView({ spots, onSpotClick, onEdit, onDelete }: SpotListV
 
   return (
     <div className="spot-list-view">
+      {/* Header with Hamburger */}
       <div className="spot-list-view-header">
+        <button
+          className="hamburger-btn"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          aria-label="Toggle filters"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
         <h2>Spots</h2>
         <div className="spot-list-view-controls">
           <select
@@ -79,6 +115,32 @@ export function SpotListView({ spots, onSpotClick, onEdit, onDelete }: SpotListV
         </div>
       </div>
 
+      {/* Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="sidebar-overlay visible"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar Drawer with Filters */}
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <button
+          className="sidebar-close"
+          onClick={() => setIsSidebarOpen(false)}
+          aria-label="Close filters"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <SpotFilters
+          onFilterChange={onFilterChange}
+          onSearchChange={onSearchChange}
+        />
+      </aside>
+
       {sortedSpots.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">📍</div>
@@ -91,7 +153,7 @@ export function SpotListView({ spots, onSpotClick, onEdit, onDelete }: SpotListV
             <article
               key={spot.id}
               className="spot-card"
-              onClick={() => onSpotClick(spot)}
+              onClick={() => handleCardClick(spot)}
             >
               {/* Card Photo */}
               {spot.photos && spot.photos.length > 0 ? (
@@ -132,36 +194,113 @@ export function SpotListView({ spots, onSpotClick, onEdit, onDelete }: SpotListV
                     {getSecurityIcon(spot.securityLevel)} {spot.securityLevel}
                   </span>
                 </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
 
-                {/* Card Actions */}
-                <div className="spot-card-actions">
-                  <button
-                    className="spot-card-action-btn edit"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit(spot);
-                    }}
+      {/* Spot Detail Modal */}
+      {selectedSpot && (
+        <div className="modal-overlay" onClick={() => setSelectedSpot(null)}>
+          <div className="spot-detail-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="spot-detail-close"
+              onClick={() => setSelectedSpot(null)}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+
+            <div className="spot-detail-content">
+              {/* Photo */}
+              {selectedSpot.photos && selectedSpot.photos.length > 0 ? (
+                <div className="spot-detail-photo">
+                  <img src={selectedSpot.photos[0]} alt={getSpotName(selectedSpot)} />
+                  {selectedSpot.photos.length > 1 && (
+                    <div className="spot-detail-photo-count">
+                      +{selectedSpot.photos.length - 1} photos
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="spot-detail-photo-placeholder">
+                  <div className="spot-detail-photo-placeholder-icon">📍</div>
+                </div>
+              )}
+
+              {/* Info */}
+              <div className="spot-detail-info">
+                <div className="spot-detail-header">
+                  <h2>{getSpotName(selectedSpot)}</h2>
+                  <span className="spot-detail-type">{selectedSpot.type}</span>
+                </div>
+
+                {selectedSpot.notes && (
+                  <p className="spot-detail-notes">{selectedSpot.notes}</p>
+                )}
+
+                {/* Tags */}
+                <div className="spot-detail-tags">
+                  <span
+                    className="spot-detail-tag status"
+                    style={{ color: getStatusColor(selectedSpot.status) }}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    {selectedSpot.status}
+                  </span>
+                  <span className="spot-detail-tag security">
+                    {getSecurityIcon(selectedSpot.securityLevel)} {selectedSpot.securityLevel}
+                  </span>
+                </div>
+
+                {/* Location */}
+                <div className="spot-detail-location">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>{selectedSpot.coords[0].toFixed(4)}, {selectedSpot.coords[1].toFixed(4)}</span>
+                </div>
+
+                {/* Actions */}
+                <div className="spot-detail-actions">
+                  <button
+                    className="spot-detail-action-btn primary"
+                    onClick={handleViewOnMap}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    View on Map
+                  </button>
+                  <button
+                    className="spot-detail-action-btn secondary"
+                    onClick={handleEdit}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
                     Edit
                   </button>
                   <button
-                    className="spot-card-action-btn delete"
-                    onClick={(e) => handleDelete(e, spot.id)}
+                    className="spot-detail-action-btn secondary"
+                    onClick={handleOpenInMaps}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="3 6 5 6 21 6"></polyline>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"></path>
+                      <line x1="8" y1="2" x2="8" y2="18"></line>
+                      <line x1="16" y1="6" x2="16" y2="22"></line>
                     </svg>
-                    Delete
+                    Open in Maps
                   </button>
                 </div>
               </div>
-            </article>
-          ))}
+            </div>
+          </div>
         </div>
       )}
     </div>

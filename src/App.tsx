@@ -301,6 +301,8 @@ function App() {
             onSpotClick={handleSpotClickFromView}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onFilterChange={handleFilterChange}
+            onSearchChange={handleSearchChange}
           />
         )}
 

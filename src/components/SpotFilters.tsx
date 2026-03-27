@@ -14,6 +14,8 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
   const [selectedSecurityLevels, setSelectedSecurityLevels] = useState<SecurityLevel[]>([]);
   const [availableNow, setAvailableNow] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [timeFrom, setTimeFrom] = useState<string>('');
+  const [timeTo, setTimeTo] = useState<string>('');
 
   // Collapsible sections state
   const [isTypeExpanded, setIsTypeExpanded] = useState<boolean>(false);
@@ -255,6 +257,27 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
             />
             Disponibile adesso
           </label>
+
+          <div className="time-range-filter">
+            <label className="time-input-label">
+              Orario Da:
+              <input
+                type="time"
+                value={timeFrom}
+                onChange={(e) => setTimeFrom(e.target.value)}
+                className="time-input"
+              />
+            </label>
+            <label className="time-input-label">
+              Orario A:
+              <input
+                type="time"
+                value={timeTo}
+                onChange={(e) => setTimeTo(e.target.value)}
+                className="time-input"
+              />
+            </label>
+          </div>
         </div>
       </div>
     </div>
