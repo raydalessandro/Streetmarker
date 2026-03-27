@@ -7,11 +7,12 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
 interface MapViewProps {
   spots: Spot[];
+  highlightedSpotId?: string | null;
   onMapClick: (coords: [number, number]) => void;
   onMarkerClick: (spot: Spot) => void;
 }
 
-export function MapView({ spots, onMapClick, onMarkerClick }: MapViewProps) {
+export function MapView({ spots, highlightedSpotId, onMapClick, onMarkerClick }: MapViewProps) {
   const mapServiceRef = useRef<MapService | null>(null);
   const spotIdsRef = useRef<Set<string>>(new Set());
 
@@ -70,26 +71,19 @@ export function MapView({ spots, onMapClick, onMarkerClick }: MapViewProps) {
 
     // Add or update markers
     spots.forEach(spot => {
+      const isHighlighted = spot.id === highlightedSpotId;
+
       if (currentSpotIds.has(spot.id)) {
         // Update existing marker
-        mapService.updateMarker(spot);
+        mapService.updateMarker(spot, isHighlighted);
       } else {
         // Add new marker
-        const marker = mapService.addMarker(spot);
+        const marker = mapService.addMarker(spot, isHighlighted);
 
-        // Register click handler for "Edit" button in popup
-        marker.on('popupopen', () => {
-          console.log('Popup opened for spot:', spot.id);
-          const editButton = document.querySelector(`button[data-spot-id="${spot.id}"]`);
-          if (editButton) {
-            console.log('Edit button found, attaching click handler');
-            editButton.addEventListener('click', () => {
-              console.log('Edit button clicked for spot:', spot.id);
-              onMarkerClick(spot);
-            });
-          } else {
-            console.warn('Edit button not found for spot:', spot.id);
-          }
+        // Register click handler - open detail modal instead of edit
+        marker.on('click', () => {
+          console.log('Marker clicked for spot:', spot.id);
+          onMarkerClick(spot);
         });
 
         currentSpotIds.add(spot.id);
@@ -98,7 +92,7 @@ export function MapView({ spots, onMapClick, onMarkerClick }: MapViewProps) {
 
     spotIdsRef.current = currentSpotIds;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [spots]); // onMarkerClick is captured in closure, don't re-run on its change
+  }, [spots, highlightedSpotId]); // Re-run when highlightedSpotId changes
 
   return (
     <div 

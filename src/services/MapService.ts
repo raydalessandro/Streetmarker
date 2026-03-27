@@ -63,27 +63,36 @@ export class MapService {
   /**
    * Add marker for a spot
    * @param spot - Spot data
+   * @param isHighlighted - Whether this marker should be highlighted
    * @returns Leaflet Marker instance
    */
-  addMarker(spot: Spot): L.Marker {
+  addMarker(spot: Spot, isHighlighted: boolean = false): L.Marker {
     if (!this.map) {
       throw new Error('Map not initialized. Call initMap() first.');
     }
 
     // Create marker with colored icon
     const color = MARKER_COLORS[spot.type];
+    const size = isHighlighted ? 32 : 24;
+    const borderWidth = isHighlighted ? 3 : 2;
+    const borderColor = isHighlighted ? '#ccff00' : 'white';
+    const boxShadow = isHighlighted
+      ? '0 0 20px rgba(204, 255, 0, 0.8), 0 2px 4px rgba(0,0,0,0.3)'
+      : '0 2px 4px rgba(0,0,0,0.3)';
+
     const icon = L.divIcon({
       className: 'custom-marker',
       html: `<div data-spot-id="${spot.id}" style="
         background-color: ${color};
-        width: 24px;
-        height: 24px;
+        width: ${size}px;
+        height: ${size}px;
         border-radius: 50%;
-        border: 2px solid white;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        border: ${borderWidth}px solid ${borderColor};
+        box-shadow: ${boxShadow};
+        transition: all 0.3s ease;
       "></div>`,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
+      iconSize: [size, size],
+      iconAnchor: [size / 2, size / 2],
     });
 
     try {
@@ -146,12 +155,13 @@ export class MapService {
   /**
    * Update existing marker or add new one
    * @param spot - Updated spot data
+   * @param isHighlighted - Whether this marker should be highlighted
    */
-  updateMarker(spot: Spot): void {
+  updateMarker(spot: Spot, isHighlighted: boolean = false): void {
     // Remove old marker if exists
     this.removeMarker(spot.id);
     // Add updated marker
-    this.addMarker(spot);
+    this.addMarker(spot, isHighlighted);
   }
 
   /**

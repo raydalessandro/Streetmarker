@@ -125,44 +125,34 @@ body {
 
 .header-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   max-width: 1400px;
   margin: 0 auto;
-  flex-wrap: wrap;
   gap: var(--space-4);
+  position: relative;
 }
 
 /* Logo Container */
 .logo-container {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  justify-content: center;
+  flex: 1;
 }
 
 .logo-image {
-  width: 40px;
+  width: 60px;
   height: auto;
-  filter: drop-shadow(0 0 10px var(--neon-green-glow));
+  filter: drop-shadow(0 0 15px var(--neon-green-glow));
 }
 
 .app-header h1 {
-  font-size: var(--text-xl);
-  font-weight: var(--font-bold);
-  margin: 0;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-1);
+  display: none;
 }
 
 .logo-subtitle {
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--neon-green);
-  font-family: var(--font-mono);
-  margin-left: var(--space-2);
+  display: none;
 }
 
 /* Hamburger Menu Button */
@@ -177,6 +167,8 @@ body {
   justify-content: center;
   cursor: pointer;
   color: var(--text-primary);
+  position: absolute;
+  left: 0;
   transition: all var(--transition-fast);
   padding: 0;
 }
@@ -187,13 +179,9 @@ body {
   border-color: var(--neon-green);
 }
 
-/* Status Badge */
+/* Status Badge - Hidden */
 .status-badge {
-  font-size: var(--text-xs);
-  font-family: var(--font-mono);
-  background: var(--glass-bg);
-  border: 1px solid var(--border-color);
-  padding: var(--space-1) var(--space-2);
+  display: none;
   border-radius: var(--radius-sm);
   color: var(--text-muted);
   backdrop-filter: var(--glass-blur);

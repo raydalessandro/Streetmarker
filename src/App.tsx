@@ -8,6 +8,7 @@ import { Gallery } from './components/Gallery';
 import { Feed } from './components/Feed';
 import { SpotListView } from './components/SpotListView';
 import { SettingsView } from './components/SettingsView';
+import { SpotDetailModal } from './components/SpotDetailModal';
 import { StorageService } from './services/StorageService';
 import { SpotService } from './services/SpotService';
 import type { Spot } from './types/spot';
@@ -25,7 +26,9 @@ function App() {
   const [spots, setSpots] = useState<Spot[]>([]);
   const [filteredSpots, setFilteredSpots] = useState<Spot[]>([]);
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
+  const [highlightedSpotId, setHighlightedSpotId] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [newSpotCoords, setNewSpotCoords] = useState<[number, number] | null>(null);
   const [filters, setFilters] = useState<SpotFiltersType>({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -92,12 +95,13 @@ function App() {
   };
 
   /**
-   * Handle marker click - open form for editing
+   * Handle marker click - open detail modal (not edit form)
    */
   const handleMarkerClick = (spot: Spot) => {
     setSelectedSpot(spot);
     setNewSpotCoords(null);
-    setIsFormOpen(true);
+    setHighlightedSpotId(spot.id);
+    setIsDetailModalOpen(true);
   };
 
   /**
@@ -141,6 +145,32 @@ function App() {
     setIsFormOpen(false);
     setSelectedSpot(null);
     setNewSpotCoords(null);
+  };
+
+  /**
+   * Handle detail modal close
+   */
+  const handleDetailModalClose = () => {
+    setIsDetailModalOpen(false);
+    setHighlightedSpotId(null);
+  };
+
+  /**
+   * Handle "View on Map" from other views - highlight spot, don't open modal
+   */
+  const handleViewSpotOnMap = (spot: Spot) => {
+    setCurrentView('map');
+    setHighlightedSpotId(spot.id);
+    setSelectedSpot(spot);
+    setIsDetailModalOpen(true);
+  };
+
+  /**
+   * Handle "Edit" from detail modal
+   */
+  const handleEditFromModal = () => {
+    setIsDetailModalOpen(false);
+    setIsFormOpen(true);
   };
 
   /**
@@ -188,13 +218,14 @@ function App() {
   };
 
   /**
-   * Handle spot click from views - switch to map and open spot
+   * Handle spot click from views - used by SpotListView (opens its own modal)
    */
   const handleSpotClickFromView = (spot: Spot) => {
+    // SpotListView handles its own modal, this is for Gallery/Feed
     setCurrentView('map');
+    setHighlightedSpotId(spot.id);
     setSelectedSpot(spot);
-    setNewSpotCoords(null);
-    setIsFormOpen(true);
+    setIsDetailModalOpen(true);
   };
 
   /**
@@ -239,12 +270,7 @@ function App() {
             </button>
             <div className="logo-container">
               <img src="/assets/logo.jpg" alt="StreetMark" className="logo-image" />
-              <h1>
-                STREET<span className="neon-text">MARK</span>
-                <span className="logo-subtitle">MILAN</span>
-              </h1>
             </div>
-            <div className="status-badge">REC // LOCAL</div>
           </div>
         </header>
       )}
@@ -287,6 +313,7 @@ function App() {
             <div className="map-container">
               <MapView
                 spots={filteredSpots}
+                highlightedSpotId={highlightedSpotId}
                 onMapClick={handleMapClick}
                 onMarkerClick={handleMarkerClick}
               />
@@ -298,7 +325,7 @@ function App() {
         {currentView === 'spots' && (
           <SpotListView
             spots={filteredSpots}
-            onSpotClick={handleSpotClickFromView}
+            onSpotClick={handleViewSpotOnMap}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onFilterChange={handleFilterChange}
@@ -331,6 +358,21 @@ function App() {
         )}
       </div>
 
+      {/* Spot Detail Modal */}
+      {isDetailModalOpen && selectedSpot && (
+        <SpotDetailModal
+          spot={selectedSpot}
+          onClose={handleDetailModalClose}
+          onViewOnMap={currentView !== 'map' ? () => handleViewSpotOnMap(selectedSpot) : undefined}
+          onEdit={handleEditFromModal}
+          onOpenInMaps={() => {
+            const [lat, lng] = selectedSpot.coords;
+            window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+          }}
+        />
+      )}
+
+      {/* Spot Form Modal */}
       {isFormOpen && (
         <div className="modal-overlay" onClick={handleFormCancel}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
