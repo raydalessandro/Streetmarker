@@ -1,8 +1,8 @@
-// src/components/SpotListView.test.tsx
+// src/components/__tests__/SpotListView.new.test.tsx
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { SpotListView } from './SpotListView';
-import type { Spot } from '../types/spot';
+import { SpotListView } from '../SpotListView';
+import type { Spot } from '../../types/spot';
 
 describe('SpotListView', () => {
   const mockSpot: Spot = {
@@ -11,6 +11,7 @@ describe('SpotListView', () => {
     status: 'free',
     securityLevel: 'low',
     coords: [45.4642, 9.1900],
+    availability: [],
     notes: 'Test spot notes',
     owner: 'Test Owner',
     photos: ['data:image/png;base64,test'],

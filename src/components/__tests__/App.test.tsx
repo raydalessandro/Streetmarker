@@ -1,11 +1,10 @@
-// src/App.test.tsx
+// src/components/__tests__/App.test.tsx
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import App from './App';
-import { StorageService } from './services/StorageService';
+import App from '../../App';
 
 // Mock StorageService
-vi.mock('./services/StorageService', () => {
+vi.mock('../../services/StorageService', () => {
   const mockSpots = [
     {
       id: '1',
@@ -13,6 +12,7 @@ vi.mock('./services/StorageService', () => {
       status: 'free',
       securityLevel: 'low',
       coords: [45.4642, 9.1900],
+      availability: [],
       notes: 'Test spot',
       owner: 'Test Owner',
       createdAt: Date.now(),
@@ -43,7 +43,7 @@ describe('App - Favorites workflow', () => {
   });
 
   it('should toggle favorite with optimistic update', async () => {
-    const { container } = render(<App />);
+    render(<App />);
 
     // Wait for spots to load
     await waitFor(() => {

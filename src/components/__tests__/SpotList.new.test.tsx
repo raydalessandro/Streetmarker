@@ -1,8 +1,8 @@
-// src/components/SpotList.test.tsx
+// src/components/__tests__/SpotList.new.test.tsx
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { SpotList } from './SpotList';
-import type { Spot } from '../types/spot';
+import { SpotList } from '../SpotList';
+import type { Spot } from '../../types/spot';
 
 describe('SpotList', () => {
   const mockSpot: Spot = {
@@ -11,6 +11,7 @@ describe('SpotList', () => {
     status: 'free',
     securityLevel: 'low',
     coords: [45.4642, 9.1900],
+    availability: [],
     notes: 'Test spot',
     owner: 'Test Owner',
     createdAt: Date.now(),
