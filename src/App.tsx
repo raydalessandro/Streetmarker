@@ -3,10 +3,11 @@ import { MapView } from './components/MapView';
 import { SpotForm } from './components/SpotForm';
 import { SpotList } from './components/SpotList';
 import { SpotFilters } from './components/SpotFilters';
-import { ImportExport } from './components/ImportExport';
 import { BottomNav, ViewType } from './components/BottomNav';
 import { Gallery } from './components/Gallery';
 import { Feed } from './components/Feed';
+import { SpotListView } from './components/SpotListView';
+import { SettingsView } from './components/SettingsView';
 import { StorageService } from './services/StorageService';
 import { SpotService } from './services/SpotService';
 import type { Spot } from './types/spot';
@@ -183,33 +184,16 @@ function App() {
    */
   const handleViewChange = (view: ViewType) => {
     setCurrentView(view);
-    // If switching to spots view, open sidebar
-    if (view === 'spots') {
-      setIsSidebarOpen(true);
-      setCurrentView('map'); // Actually stay on map, just open sidebar
-    } else {
-      setIsSidebarOpen(false);
-    }
+    setIsSidebarOpen(false);
   };
 
   /**
-   * Handle spot click from Gallery/Feed - switch to map and open spot
+   * Handle spot click from views - switch to map and open spot
    */
   const handleSpotClickFromView = (spot: Spot) => {
     setCurrentView('map');
     setSelectedSpot(spot);
     setNewSpotCoords(null);
-    setIsFormOpen(true);
-  };
-
-  /**
-   * Handle FAB click - open form for new spot at map center
-   */
-  const handleAddClick = () => {
-    // Default to Milano center coordinates
-    const milanCenter: [number, number] = [45.4642, 9.1900];
-    setNewSpotCoords(milanCenter);
-    setSelectedSpot(null);
     setIsFormOpen(true);
   };
 
@@ -238,30 +222,32 @@ function App() {
 
   return (
     <div className="app">
-      <header className="app-header">
-        <div className="header-content">
-          <button
-            className="hamburger-btn"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            aria-label="Toggle menu"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          </button>
-          <div className="logo-container">
-            <img src="/assets/logo.jpg" alt="StreetMark" className="logo-image" />
-            <h1>
-              STREET<span className="neon-text">MARK</span>
-              <span className="logo-subtitle">MILAN</span>
-            </h1>
+      {/* Header - Only on Map View */}
+      {currentView === 'map' && (
+        <header className="app-header">
+          <div className="header-content">
+            <button
+              className="hamburger-btn"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              aria-label="Toggle menu"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            </button>
+            <div className="logo-container">
+              <img src="/assets/logo.jpg" alt="StreetMark" className="logo-image" />
+              <h1>
+                STREET<span className="neon-text">MARK</span>
+                <span className="logo-subtitle">MILAN</span>
+              </h1>
+            </div>
+            <div className="status-badge">REC // LOCAL</div>
           </div>
-          <div className="status-badge">REC // LOCAL</div>
-          <ImportExport spots={spots} onImport={handleImport} />
-        </div>
-      </header>
+        </header>
+      )}
 
       <div className="main">
         {/* Map View with Sidebar */}
@@ -308,6 +294,16 @@ function App() {
           </>
         )}
 
+        {/* Spots View */}
+        {currentView === 'spots' && (
+          <SpotListView
+            spots={filteredSpots}
+            onSpotClick={handleSpotClickFromView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        )}
+
         {/* Gallery View */}
         {currentView === 'gallery' && (
           <Gallery
@@ -321,6 +317,14 @@ function App() {
           <Feed
             spots={filteredSpots}
             onSpotClick={handleSpotClickFromView}
+          />
+        )}
+
+        {/* Settings View */}
+        {currentView === 'settings' && (
+          <SettingsView
+            spots={spots}
+            onImport={handleImport}
           />
         )}
       </div>
@@ -342,7 +346,6 @@ function App() {
       <BottomNav
         currentView={currentView}
         onViewChange={handleViewChange}
-        onAddClick={handleAddClick}
       />
     </div>
   );

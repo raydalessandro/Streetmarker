@@ -1,14 +1,13 @@
 import './BottomNav.css';
 
-export type ViewType = 'map' | 'spots' | 'gallery' | 'feed';
+export type ViewType = 'map' | 'spots' | 'gallery' | 'feed' | 'settings';
 
 interface BottomNavProps {
   currentView: ViewType;
   onViewChange: (view: ViewType) => void;
-  onAddClick: () => void;
 }
 
-export function BottomNav({ currentView, onViewChange, onAddClick }: BottomNavProps) {
+export function BottomNav({ currentView, onViewChange }: BottomNavProps) {
   return (
     <nav className="bottom-nav">
       <button
@@ -39,15 +38,15 @@ export function BottomNav({ currentView, onViewChange, onAddClick }: BottomNavPr
         <span className="nav-label">Spot</span>
       </button>
 
-      {/* FAB - Floating Action Button (centered) */}
+      {/* FAB - Settings Button (centered) */}
       <button
         className="fab"
-        onClick={onAddClick}
-        aria-label="Add new spot"
+        onClick={() => onViewChange('settings')}
+        aria-label="Settings"
       >
         <svg viewBox="0 0 24 24" className="fab-icon">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 1v6m0 6v6m8.66-15.66l-4.24 4.24m-4.24 4.24l-4.24 4.24M23 12h-6m-6 0H1m20.66 8.66l-4.24-4.24m-4.24-4.24l-4.24-4.24"></path>
         </svg>
       </button>
 
