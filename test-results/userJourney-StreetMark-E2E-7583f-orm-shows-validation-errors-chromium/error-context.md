@@ -1,0 +1,396 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - heading "StreetMark Milano" [level=1] [ref=e6]
+      - generic [ref=e8]:
+        - button "Export Data" [ref=e9] [cursor=pointer]
+        - button "Import Data" [ref=e10] [cursor=pointer]
+  - generic [ref=e11]:
+    - complementary [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - heading "Search" [level=3] [ref=e15]
+          - textbox "Search spots..." [ref=e16]
+        - generic [ref=e17]:
+          - heading "Type" [level=3] [ref=e18]
+          - generic [ref=e19] [cursor=pointer]:
+            - checkbox "Wall" [ref=e20]
+            - text: Wall
+          - generic [ref=e21] [cursor=pointer]:
+            - checkbox "Train" [ref=e22]
+            - text: Train
+          - generic [ref=e23] [cursor=pointer]:
+            - checkbox "Sign" [ref=e24]
+            - text: Sign
+          - generic [ref=e25] [cursor=pointer]:
+            - checkbox "Other" [ref=e26]
+            - text: Other
+        - generic [ref=e27]:
+          - heading "Status" [level=3] [ref=e28]
+          - generic [ref=e29] [cursor=pointer]:
+            - checkbox "Free" [ref=e30]
+            - text: Free
+          - generic [ref=e31] [cursor=pointer]:
+            - checkbox "Occupied" [ref=e32]
+            - text: Occupied
+          - generic [ref=e33] [cursor=pointer]:
+            - checkbox "Protected" [ref=e34]
+            - text: Protected
+        - generic [ref=e35]:
+          - heading "Security Level" [level=3] [ref=e36]
+          - generic [ref=e37] [cursor=pointer]:
+            - checkbox "Low" [ref=e38]
+            - text: Low
+          - generic [ref=e39] [cursor=pointer]:
+            - checkbox "Medium" [ref=e40]
+            - text: Medium
+          - generic [ref=e41] [cursor=pointer]:
+            - checkbox "High" [ref=e42]
+            - text: High
+        - generic [ref=e43]:
+          - heading "Availability" [level=3] [ref=e44]
+          - generic [ref=e45] [cursor=pointer]:
+            - checkbox "Disponibile adesso" [ref=e46]
+            - text: Disponibile adesso
+      - generic [ref=e47]:
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - generic [ref=e50]: wall
+            - generic [ref=e51]: occupied
+          - generic [ref=e52]:
+            - paragraph [ref=e53]: Via Pepe (Isola) - Murale enorme di 250 metri dedicato a Leonardo da Vinci, realizzato per il cinquecentenario della sua morte. 25 artisti tra cui studenti, cittadini e volontari. Area pedonalizzata e depavimentata tra Via Pepe e Via Borsieri.
+            - paragraph [ref=e54]:
+              - strong [ref=e55]: "Owner:"
+              - text: 25 artisti + studenti
+            - paragraph [ref=e56]:
+              - strong [ref=e57]: "Security:"
+              - text: low
+            - paragraph [ref=e58]:
+              - strong [ref=e59]: "Coords:"
+              - text: 45.4902, 9.1910
+          - generic [ref=e60]:
+            - button "Edit spot" [ref=e61] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e62] [cursor=pointer]: Delete
+        - generic [ref=e63]:
+          - generic [ref=e64]:
+            - generic [ref=e65]: wall
+            - generic [ref=e66]: occupied
+          - generic [ref=e67]:
+            - paragraph [ref=e68]: Via Viotti (Lambrate) - Murale anti-smog su larga scala che utilizza la pittura Airlite, in grado di assorbire l'inquinamento atmosferico e ridurre il biossido di azoto del 90%. Esempio di street art funzionale che unisce arte e sostenibilità ambientale.
+            - paragraph [ref=e69]:
+              - strong [ref=e70]: "Owner:"
+              - text: Artista non specificato
+            - paragraph [ref=e71]:
+              - strong [ref=e72]: "Security:"
+              - text: low
+            - paragraph [ref=e73]:
+              - strong [ref=e74]: "Coords:"
+              - text: 45.4398, 9.1756
+          - generic [ref=e75]:
+            - button "Edit spot" [ref=e76] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e77] [cursor=pointer]: Delete
+        - generic [ref=e78]:
+          - generic [ref=e79]:
+            - generic [ref=e80]: wall
+            - generic [ref=e81]: occupied
+          - generic [ref=e82]:
+            - paragraph [ref=e83]: "Giardino delle Culture (Via Morosini 8, angolo Via Bezzecca, zona Cinque Giornate). Due muri dedicati all'amore dipinti da Millo: \"Love Seeker\" e \"Heart Slingshot\". Parco pubblico con street art di alta qualità. Uno dei murales più fotografati di Milano."
+            - paragraph [ref=e84]:
+              - strong [ref=e85]: "Owner:"
+              - text: Millo
+            - paragraph [ref=e86]:
+              - strong [ref=e87]: "Security:"
+              - text: low
+            - paragraph [ref=e88]:
+              - strong [ref=e89]: "Coords:"
+              - text: 45.4618, 9.1893
+          - generic [ref=e90]:
+            - button "Edit spot" [ref=e91] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e92] [cursor=pointer]: Delete
+        - generic [ref=e93]:
+          - generic [ref=e94]:
+            - generic [ref=e95]: wall
+            - generic [ref=e96]: occupied
+          - generic [ref=e97]:
+            - paragraph [ref=e98]: Quartiere Ortica - Progetto OR.ME (Ortica Memoria). 20 murales tra i più grandi d'Italia che raccontano la storia del Novecento milanese. Via Ortica 12 e 16 ospitano opere iconiche. Quartiere trasformato in museo a cielo aperto. Studio degli Orticanoodles in Via San Faustino.
+            - paragraph [ref=e99]:
+              - strong [ref=e100]: "Owner:"
+              - text: Orticanoodles (Walli & Alita)
+            - paragraph [ref=e101]:
+              - strong [ref=e102]: "Security:"
+              - text: low
+            - paragraph [ref=e103]:
+              - strong [ref=e104]: "Coords:"
+              - text: 45.4264, 9.1812
+          - generic [ref=e105]:
+            - button "Edit spot" [ref=e106] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e107] [cursor=pointer]: Delete
+        - generic [ref=e108]:
+          - generic [ref=e109]:
+            - generic [ref=e110]: wall
+            - generic [ref=e111]: occupied
+          - generic [ref=e112]:
+            - paragraph [ref=e113]: Centro sociale autogestito Cox18 (Via Conchetta 18, Navigli/Ticinese). Facciata completamente dipinta da Blu nel 2008 con texture densa di personaggi stilizzati. Opera iconica della street art milanese. Sede del Primo Moroni archive e libreria Calusca.
+            - paragraph [ref=e114]:
+              - strong [ref=e115]: "Owner:"
+              - text: Cox18 CSOA / Blu
+            - paragraph [ref=e116]:
+              - strong [ref=e117]: "Security:"
+              - text: low
+            - paragraph [ref=e118]:
+              - strong [ref=e119]: "Coords:"
+              - text: 45.4389, 9.1803
+          - generic [ref=e120]:
+            - button "Edit spot" [ref=e121] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e122] [cursor=pointer]: Delete
+        - generic [ref=e123]:
+          - generic [ref=e124]:
+            - generic [ref=e125]: train
+            - generic [ref=e126]: free
+          - generic [ref=e127]:
+            - paragraph [ref=e128]: "Area Porto di Mare / Corsico (sud Milano) - Hall of Fame su muri ferroviari. Zona industriale dismessa. Legal graffiti wall documentata su legal-walls.net. ATTENZIONE: area ferroviaria, alta sicurezza, dipingere solo nelle ore consentite. Tradizione writing old school milanese."
+            - paragraph [ref=e129]:
+              - strong [ref=e130]: "Owner:"
+              - text: Hall of Fame Corsico
+            - paragraph [ref=e131]:
+              - strong [ref=e132]: "Security:"
+              - text: high
+            - paragraph [ref=e133]:
+              - strong [ref=e134]: "Coords:"
+              - text: 45.4392, 9.1710
+          - generic [ref=e135]:
+            - button "Edit spot" [ref=e136] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e137] [cursor=pointer]: Delete
+        - generic [ref=e138]:
+          - generic [ref=e139]:
+            - generic [ref=e140]: wall
+            - generic [ref=e141]: occupied
+          - generic [ref=e142]:
+            - paragraph [ref=e143]: Via Padova (NoLo - North of Loreto) - Quartiere multietnico in trasformazione. Murales recenti di Robico (150mq presso sede Fineco) e Chekos Art. Sef01 con Santa Sarita (iconografia sacra/pop per comunità peruviana). Boris Veliz con Dante in poncho ecuadoriano. Specchio della diversità culturale milanese.
+            - paragraph [ref=e144]:
+              - strong [ref=e145]: "Owner:"
+              - text: Robico, Chekos Art, Sef01, Boris Veliz
+            - paragraph [ref=e146]:
+              - strong [ref=e147]: "Security:"
+              - text: medium
+            - paragraph [ref=e148]:
+              - strong [ref=e149]: "Coords:"
+              - text: 45.4620, 9.2098
+          - generic [ref=e150]:
+            - button "Edit spot" [ref=e151] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e152] [cursor=pointer]: Delete
+        - generic [ref=e153]:
+          - generic [ref=e154]:
+            - generic [ref=e155]: wall
+            - generic [ref=e156]: protected
+          - generic [ref=e157]:
+            - paragraph [ref=e158]: Muro storico del centro sociale Leoncavallo (Via Watteau 7, zona Greco). Hall of fame del writing milanese, ospita pezzi di crew famose. Graffiti protetti dalla Soprintendenza di Milano, definiti da Sgarbi come "la Cappella Sistina del contemporaneo". Opere di Blu, Ozmo, Atomo, Pao, Mr. Wany, Zed1.
+            - paragraph [ref=e159]:
+              - strong [ref=e160]: "Owner:"
+              - text: Leoncavallo CSOA
+            - paragraph [ref=e161]:
+              - strong [ref=e162]: "Security:"
+              - text: low
+            - paragraph [ref=e163]:
+              - strong [ref=e164]: "Coords:"
+              - text: 45.4967, 9.2081
+          - generic [ref=e165]:
+            - button "Edit spot" [ref=e166] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e167] [cursor=pointer]: Delete
+        - generic [ref=e168]:
+          - generic [ref=e169]:
+            - generic [ref=e170]: wall
+            - generic [ref=e171]: free
+          - generic [ref=e172]:
+            - paragraph [ref=e173]: Via Pontano (NoLo district) - "East Side Gallery" milanese con murales numerati come opere museali. Uno dei 100 muri liberi del Comune. Hall of fame TDK crew. Free wall per writers e street artists, si estende quasi senza interruzioni fino alla metro Lambrate. Stretch da Via Padova a Viale Monza.
+            - paragraph [ref=e174]:
+              - strong [ref=e175]: "Owner:"
+              - text: TDK crew / Comune Milano
+            - paragraph [ref=e176]:
+              - strong [ref=e177]: "Security:"
+              - text: low
+            - paragraph [ref=e178]:
+              - strong [ref=e179]: "Coords:"
+              - text: 45.4506, 9.2105
+          - generic [ref=e180]:
+            - button "Edit spot" [ref=e181] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e182] [cursor=pointer]: Delete
+        - generic [ref=e183]:
+          - generic [ref=e184]:
+            - generic [ref=e185]: other
+            - generic [ref=e186]: free
+          - generic [ref=e187]:
+            - paragraph [ref=e188]: Sottopassaggio pedonale sotto Viale Famagosta (zona Isola borders) - Passaggio per writers interessati a lettering e graffiti writing puro. Sottopasso con forte presenza di tags e throw-ups. Zona di confine tra quartieri, atmosfera underground autentica.
+            - paragraph [ref=e189]:
+              - strong [ref=e190]: "Owner:"
+              - text: Writers vari
+            - paragraph [ref=e191]:
+              - strong [ref=e192]: "Security:"
+              - text: medium
+            - paragraph [ref=e193]:
+              - strong [ref=e194]: "Coords:"
+              - text: 45.4850, 9.2050
+          - generic [ref=e195]:
+            - button "Edit spot" [ref=e196] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e197] [cursor=pointer]: Delete
+        - generic [ref=e198]:
+          - generic [ref=e199]:
+            - generic [ref=e200]: wall
+            - generic [ref=e201]: occupied
+          - generic [ref=e202]:
+            - paragraph [ref=e203]: "Zona Colonne di San Lorenzo e Basilica - Progetto \"Milano Street History\" con murales di personaggi storici: Giuseppe Verdi, Napoleone, Attila, Sant'Ambrogio. Area storica del centro con street art che dialoga con il patrimonio culturale. Zona universitaria e movida."
+            - paragraph [ref=e204]:
+              - strong [ref=e205]: "Owner:"
+              - text: Progetto Milano Street History
+            - paragraph [ref=e206]:
+              - strong [ref=e207]: "Security:"
+              - text: low
+            - paragraph [ref=e208]:
+              - strong [ref=e209]: "Coords:"
+              - text: 45.4638, 9.1821
+          - generic [ref=e210]:
+            - button "Edit spot" [ref=e211] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e212] [cursor=pointer]: Delete
+        - generic [ref=e213]:
+          - generic [ref=e214]:
+            - generic [ref=e215]: wall
+            - generic [ref=e216]: occupied
+          - generic [ref=e217]:
+            - paragraph [ref=e218]: Darsena e Navigli - Museo a cielo aperto con murales su ponti e case. Opere lungo tratto tra Darsena e Naviglio Pavese. "Squalo di Milano" sul ponte del Naviglio Pavese. Casa Gorizia occupata (angolo Via Vigevano/Via Gorizia) con stili Tilf e tag Vandalo. Via Magolfa con casa museo Alda Merini.
+            - paragraph [ref=e219]:
+              - strong [ref=e220]: "Owner:"
+              - text: Vari artisti
+            - paragraph [ref=e221]:
+              - strong [ref=e222]: "Security:"
+              - text: low
+            - paragraph [ref=e223]:
+              - strong [ref=e224]: "Coords:"
+              - text: 45.4510, 9.1804
+          - generic [ref=e225]:
+            - button "Edit spot" [ref=e226] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e227] [cursor=pointer]: Delete
+        - generic [ref=e228]:
+          - generic [ref=e229]:
+            - generic [ref=e230]: wall
+            - generic [ref=e231]: occupied
+          - generic [ref=e232]:
+            - paragraph [ref=e233]: Via Borsieri 5 (Isola) - Angolo Via Sebenico. Uno dei murales più storici di Isola, realizzato da Microbo, Bo130 e The Don. Nel 2021 aggiunto murale dedicato ad Aida Accolla (prima ballerina alla Scala) in tonalità rosa e grigio. Quartiere Isola è la culla della street art milanese.
+            - paragraph [ref=e234]:
+              - strong [ref=e235]: "Owner:"
+              - text: Microbo, Bo130, The Don
+            - paragraph [ref=e236]:
+              - strong [ref=e237]: "Security:"
+              - text: low
+            - paragraph [ref=e238]:
+              - strong [ref=e239]: "Coords:"
+              - text: 45.4896, 9.1900
+          - generic [ref=e240]:
+            - button "Edit spot" [ref=e241] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e242] [cursor=pointer]: Delete
+        - generic [ref=e243]:
+          - generic [ref=e244]:
+            - generic [ref=e245]: wall
+            - generic [ref=e246]: free
+          - generic [ref=e247]:
+            - paragraph [ref=e248]: Via Camillo ed Otto Cima (Lambrate) - Lunga hall of fame UK/TGF, quartier generale della crew negli anni '90. Zona industriale con muri ferroviari e siti dismessi. Pezzi di Styng 253, Virus, Ghen, Thero. Piazza Monte Titano vicina con opera di Blu (biciclette giganti vs auto).
+            - paragraph [ref=e249]:
+              - strong [ref=e250]: "Owner:"
+              - text: UK/TGF crew
+            - paragraph [ref=e251]:
+              - strong [ref=e252]: "Security:"
+              - text: medium
+            - paragraph [ref=e253]:
+              - strong [ref=e254]: "Coords:"
+              - text: 45.4890, 9.2144
+          - generic [ref=e255]:
+            - button "Edit spot" [ref=e256] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e257] [cursor=pointer]: Delete
+        - generic [ref=e258]:
+          - generic [ref=e259]:
+            - generic [ref=e260]: wall
+            - generic [ref=e261]: free
+          - generic [ref=e262]:
+            - paragraph [ref=e263]: Via Privata Simone Schiaffino (Bovisa) - Alcuni dei muri più grandi del quartiere. Ex hall of fame con nuovi pezzi aggiunti. Area Politecnico campus. Festival Poli Urban Colors con opere di Peeta, Zedz, 2501, Rancy, Frah Quintale. "Mutevole" di Elisabetta Mastro (400mq, 23 sezioni).
+            - paragraph [ref=e264]:
+              - strong [ref=e265]: "Owner:"
+              - text: Politecnico / Poli Urban Colors
+            - paragraph [ref=e266]:
+              - strong [ref=e267]: "Security:"
+              - text: medium
+            - paragraph [ref=e268]:
+              - strong [ref=e269]: "Coords:"
+              - text: 45.5130, 9.1589
+          - generic [ref=e270]:
+            - button "Edit spot" [ref=e271] [cursor=pointer]: Edit
+            - button "Delete spot" [ref=e272] [cursor=pointer]: Delete
+    - generic [ref=e274]:
+      - generic:
+        - generic:
+          - button [ref=e275] [cursor=pointer]
+          - button "3" [ref=e277] [cursor=pointer]:
+            - generic [ref=e278]: "3"
+          - button [ref=e279] [cursor=pointer]
+          - button [ref=e281] [cursor=pointer]
+          - button [ref=e283] [cursor=pointer]
+          - button "2" [ref=e285] [cursor=pointer]:
+            - generic [ref=e286]: "2"
+          - button [ref=e287] [cursor=pointer]
+          - button "2" [ref=e289] [cursor=pointer]:
+            - generic [ref=e290]: "2"
+          - button "2" [ref=e291] [cursor=pointer]:
+            - generic [ref=e292]: "2"
+          - button [ref=e293] [cursor=pointer]
+      - generic:
+        - generic [ref=e295]:
+          - button "Zoom in" [ref=e296] [cursor=pointer]: +
+          - button "Zoom out" [ref=e297] [cursor=pointer]: −
+        - generic [ref=e298]:
+          - link "Leaflet" [ref=e299] [cursor=pointer]:
+            - /url: https://leafletjs.com
+            - img [ref=e300]
+            - text: Leaflet
+          - text: "| © OpenStreetMap contributors"
+  - generic [ref=e306]:
+    - generic [ref=e307]:
+      - generic [ref=e308]: Latitude *
+      - spinbutton "Latitude *" [ref=e309]: "45.479151295104785"
+    - generic [ref=e310]:
+      - generic [ref=e311]: Longitude *
+      - spinbutton "Longitude *" [ref=e312]: "9.121398925781252"
+    - generic [ref=e313]:
+      - generic [ref=e314]: Type *
+      - combobox "Type *" [ref=e315]:
+        - option "Wall" [selected]
+        - option "Train"
+        - option "Sign"
+        - option "Other"
+    - generic [ref=e316]:
+      - generic [ref=e317]: Status *
+      - combobox "Status *" [ref=e318]:
+        - option "Free" [selected]
+        - option "Occupied"
+        - option "Protected"
+    - generic [ref=e319]:
+      - generic [ref=e320]: Security Level *
+      - combobox "Security Level *" [ref=e321]:
+        - option "Low" [selected]
+        - option "Medium"
+        - option "High"
+    - generic [ref=e322]:
+      - generic [ref=e323]: Owner (optional)
+      - textbox "Owner (optional)" [ref=e324]:
+        - /placeholder: Crew name
+    - generic [ref=e325]:
+      - generic [ref=e326]: Notes * (0/500)
+      - textbox "Notes * (0/500)" [active] [ref=e327]:
+        - /placeholder: Add details about this spot...
+    - generic [ref=e328]:
+      - generic [ref=e329]: Availability
+      - button "Add Time Range" [ref=e330] [cursor=pointer]
+    - generic [ref=e331]:
+      - button "Submit" [ref=e332] [cursor=pointer]
+      - button "Cancel" [ref=e333] [cursor=pointer]
+```

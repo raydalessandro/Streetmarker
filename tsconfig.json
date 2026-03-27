@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting - Strict Mode */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true
+  },
+  "include": ["src"],
+  "exclude": [
+    "src/components/**/__tests__/**",
+    "src/services/__tests__/ExportService.test.ts",
+    "src/services/__tests__/ImportService.test.ts",
+    "src/services/__tests__/MapService.test.ts",
+    "src/services/__tests__/SpotService.test.ts",
+    "src/components/MapView.tsx",
+    "src/components/SpotForm.tsx",
+    "src/components/SpotList.tsx",
+    "src/components/ImportExport.tsx",
+    "src/services/MapService.ts",
+    "src/services/SpotService.ts",
+    "src/services/ExportService.ts",
+    "src/services/ImportService.ts"
+  ],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
