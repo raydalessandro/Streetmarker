@@ -62,7 +62,7 @@ describe('PhotoService', () => {
       expect(result.errors).toContain('Photo size exceeds 5MB limit');
     });
 
-    it('should reject non-image file types', () => {
+    it('should reject non-image/video file types', () => {
       const invalidFile = new File(
         ['test content'],
         'document.pdf',
@@ -72,7 +72,7 @@ describe('PhotoService', () => {
       const result = service.validatePhoto(invalidFile);
 
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Invalid file type. Only JPEG, PNG, and WebP are allowed');
+      expect(result.errors).toContain('Invalid file type. Only images (JPEG, PNG, WebP) and videos (MP4, WebM, MOV) are allowed');
     });
 
     it('should reject empty file', () => {
@@ -136,18 +136,18 @@ describe('PhotoService', () => {
   });
 
   describe('validatePhotoCount', () => {
-    it('should accept array with fewer than 5 photos', () => {
+    it('should accept array with fewer than 15 media', () => {
       const photos = ['photo1', 'photo2', 'photo3'];
 
       const result = service.validatePhotoCount(photos);
 
       expect(result.valid).toBe(true);
       expect(result.canAddMore).toBe(true);
-      expect(result.remaining).toBe(2); // 5 - 3
+      expect(result.remaining).toBe(12); // 15 - 3
     });
 
-    it('should accept array with exactly 5 photos', () => {
-      const photos = ['p1', 'p2', 'p3', 'p4', 'p5'];
+    it('should accept array with exactly 15 media', () => {
+      const photos = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'v1', 'v2', 'v3', 'v4', 'v5'];
 
       const result = service.validatePhotoCount(photos);
 
@@ -156,15 +156,15 @@ describe('PhotoService', () => {
       expect(result.remaining).toBe(0);
     });
 
-    it('should reject array exceeding 5 photos', () => {
-      const photos = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'];
+    it('should reject array exceeding 15 media', () => {
+      const photos = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'v1', 'v2', 'v3', 'v4', 'v5', 'v6'];
 
       const result = service.validatePhotoCount(photos);
 
       expect(result.valid).toBe(false);
       expect(result.canAddMore).toBe(false);
       expect(result.remaining).toBe(0);
-      expect(result.error).toBe('Maximum 5 photos per spot');
+      expect(result.error).toBe('Maximum 15 media files per spot');
     });
 
     it('should accept empty array', () => {
@@ -174,7 +174,7 @@ describe('PhotoService', () => {
 
       expect(result.valid).toBe(true);
       expect(result.canAddMore).toBe(true);
-      expect(result.remaining).toBe(5);
+      expect(result.remaining).toBe(15);
     });
   });
 
@@ -230,23 +230,50 @@ describe('PhotoService', () => {
   });
 
   describe('MAX_PHOTO_SIZE constant', () => {
-    it('should define 5MB limit', () => {
+    it('should define 5MB limit for photos', () => {
       expect(PhotoService.MAX_PHOTO_SIZE).toBe(5 * 1024 * 1024); // 5MB in bytes
     });
   });
 
-  describe('MAX_PHOTOS_PER_SPOT constant', () => {
-    it('should define 5 photos limit', () => {
-      expect(PhotoService.MAX_PHOTOS_PER_SPOT).toBe(5);
+  describe('MAX_VIDEO_SIZE constant', () => {
+    it('should define 10MB limit for videos', () => {
+      expect(PhotoService.MAX_VIDEO_SIZE).toBe(10 * 1024 * 1024); // 10MB in bytes
     });
   });
 
-  describe('ALLOWED_TYPES constant', () => {
+  describe('MAX_PHOTOS_PER_SPOT constant', () => {
+    it('should define 10 photos limit', () => {
+      expect(PhotoService.MAX_PHOTOS_PER_SPOT).toBe(10);
+    });
+  });
+
+  describe('MAX_VIDEOS_PER_SPOT constant', () => {
+    it('should define 5 videos limit', () => {
+      expect(PhotoService.MAX_VIDEOS_PER_SPOT).toBe(5);
+    });
+  });
+
+  describe('MAX_MEDIA_PER_SPOT constant', () => {
+    it('should define 15 total media limit', () => {
+      expect(PhotoService.MAX_MEDIA_PER_SPOT).toBe(15);
+    });
+  });
+
+  describe('ALLOWED_IMAGE_TYPES constant', () => {
     it('should allow JPEG, PNG, WebP', () => {
-      expect(PhotoService.ALLOWED_TYPES).toContain('image/jpeg');
-      expect(PhotoService.ALLOWED_TYPES).toContain('image/png');
-      expect(PhotoService.ALLOWED_TYPES).toContain('image/webp');
-      expect(PhotoService.ALLOWED_TYPES).toHaveLength(3);
+      expect(PhotoService.ALLOWED_IMAGE_TYPES).toContain('image/jpeg');
+      expect(PhotoService.ALLOWED_IMAGE_TYPES).toContain('image/png');
+      expect(PhotoService.ALLOWED_IMAGE_TYPES).toContain('image/webp');
+      expect(PhotoService.ALLOWED_IMAGE_TYPES).toHaveLength(3);
+    });
+  });
+
+  describe('ALLOWED_VIDEO_TYPES constant', () => {
+    it('should allow MP4, WebM, QuickTime', () => {
+      expect(PhotoService.ALLOWED_VIDEO_TYPES).toContain('video/mp4');
+      expect(PhotoService.ALLOWED_VIDEO_TYPES).toContain('video/webm');
+      expect(PhotoService.ALLOWED_VIDEO_TYPES).toContain('video/quicktime');
+      expect(PhotoService.ALLOWED_VIDEO_TYPES).toHaveLength(3);
     });
   });
 });

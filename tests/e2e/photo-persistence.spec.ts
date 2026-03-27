@@ -19,8 +19,8 @@ test.describe('Photo Persistence', () => {
       notes: 'Test spot with photo',
     });
 
-    // 2. Upload photo (mock file input)
-    const fileInput = page.locator('input[type="file"]');
+    // 2. Upload photo (mock file input) - use aria-label to target the photo upload input specifically
+    const fileInput = page.getByLabel('Upload photo or video');
 
     // Create a test image file
     const testImageBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
@@ -38,10 +38,17 @@ test.describe('Photo Persistence', () => {
     // 3. Submit form
     await submitSpotForm(page);
 
-    // 4. Verify photo visible in thumbnails
+    // 4. Wait for spot to appear in list
+    await expect(page.locator('.spot-card').filter({ hasText: 'Test spot with photo' })).toBeVisible({ timeout: 5000 });
+
+    // 5. Click on the spot card to open detail view
+    await page.locator('.spot-card').filter({ hasText: 'Test spot with photo' }).first().click();
+    await page.waitForTimeout(500); // Wait for detail to render
+
+    // 6. Verify photo visible in thumbnails within the detail view
     await expect(page.locator('.photo-thumbnail img')).toBeVisible({ timeout: 5000 });
 
-    // 5. Get spot data from IndexedDB before refresh
+    // 7. Get spot data from IndexedDB before refresh
     const spotBeforeRefresh = await page.evaluate(() => {
       return new Promise((resolve) => {
         const request = indexedDB.open('streetmark-db', 1);
@@ -59,15 +66,15 @@ test.describe('Photo Persistence', () => {
 
     console.log('Spot before refresh:', spotBeforeRefresh);
 
-    // 6. Refresh page
+    // 8. Refresh page
     await page.reload();
     await waitForMap(page);
 
-    // 7. Verify spot still exists
+    // 9. Verify spot still exists
     const spots = await getSpotsFromList(page);
     expect(spots.some(s => s.text?.includes('Test spot with photo'))).toBe(true);
 
-    // 8. Get spot data from IndexedDB after refresh
+    // 10. Get spot data from IndexedDB after refresh
     const spotAfterRefresh = await page.evaluate(() => {
       return new Promise((resolve) => {
         const request = indexedDB.open('streetmark-db', 1);
@@ -85,12 +92,12 @@ test.describe('Photo Persistence', () => {
 
     console.log('Spot after refresh:', spotAfterRefresh);
 
-    // 9. CRITICAL: Verify photos array persisted
+    // 11. CRITICAL: Verify photos array persisted
     expect(spotAfterRefresh).toHaveProperty('photos');
     expect((spotAfterRefresh as any).photos).toBeDefined();
     expect((spotAfterRefresh as any).photos.length).toBeGreaterThan(0);
 
-    // 10. Click spot to open detail and verify photo still renders
+    // 12. Click spot to open detail and verify photo still renders
     const spotCards = page.locator('.spot-card');
     await spotCards.first().click();
 
@@ -107,8 +114,8 @@ test.describe('Photo Persistence', () => {
       notes: 'Multiple photos test',
     });
 
-    // 2. Upload 3 photos
-    const fileInput = page.locator('input[type="file"]');
+    // 2. Upload 3 photos - use aria-label to target the photo upload input specifically
+    const fileInput = page.getByLabel('Upload photo or video');
     const testImageBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
     const buffer = Buffer.from(testImageBase64, 'base64');
 
@@ -124,19 +131,25 @@ test.describe('Photo Persistence', () => {
     // 3. Submit
     await submitSpotForm(page);
 
-    // 4. Verify 3 thumbnails visible
+    // 4. Wait for spot to appear and open it
+    await expect(page.locator('.spot-card').filter({ hasText: 'Multiple photos test' })).toBeVisible({ timeout: 5000 });
+    await page.locator('.spot-card').filter({ hasText: 'Multiple photos test' }).first().click();
+    await page.waitForTimeout(500);
+
+    // 5. Verify 3 thumbnails visible
     const thumbnailsBeforeRefresh = page.locator('.photo-thumbnail');
     await expect(thumbnailsBeforeRefresh).toHaveCount(3, { timeout: 5000 });
 
-    // 5. Refresh
+    // 6. Refresh
     await page.reload();
     await waitForMap(page);
 
-    // 6. Click spot
-    const spotCards = page.locator('.spot-card');
+    // 7. Click spot
+    const spotCards = page.locator('.spot-card').filter({ hasText: 'Multiple photos test' });
     await spotCards.first().click();
+    await page.waitForTimeout(500);
 
-    // 7. Verify 3 thumbnails still visible after refresh
+    // 8. Verify 3 thumbnails still visible after refresh
     const thumbnailsAfterRefresh = page.locator('.photo-thumbnail');
     await expect(thumbnailsAfterRefresh).toHaveCount(3, { timeout: 5000 });
   });

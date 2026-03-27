@@ -18,7 +18,7 @@ describe('PhotoUpload', () => {
       const input = screen.getByLabelText(/upload photo/i);
       expect(input).toBeInTheDocument();
       expect(input).toHaveAttribute('type', 'file');
-      expect(input).toHaveAttribute('accept', 'image/jpeg,image/png,image/webp');
+      expect(input).toHaveAttribute('accept', 'image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime');
     });
 
     it('should show "Add Photo" button when no photos', () => {
@@ -32,7 +32,7 @@ describe('PhotoUpload', () => {
 
       render(<PhotoUpload photos={photos} onPhotosChange={mockOnPhotosChange} />);
 
-      expect(screen.getByText(/1 \/ 5 photos/i)).toBeInTheDocument();
+      expect(screen.getByText(/1 \/ 15 media \(1 photos, 0 videos\)/i)).toBeInTheDocument();
     });
 
     it('should show thumbnails for existing photos', () => {
@@ -49,8 +49,8 @@ describe('PhotoUpload', () => {
       expect(thumbnails[1]).toHaveAttribute('src', photos[1]);
     });
 
-    it('should disable input when max photos reached (5)', () => {
-      const photos = ['p1', 'p2', 'p3', 'p4', 'p5'];
+    it('should disable input when max media reached (15)', () => {
+      const photos = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'v1', 'v2', 'v3', 'v4', 'v5'];
 
       render(<PhotoUpload photos={photos} onPhotosChange={mockOnPhotosChange} />);
 
@@ -58,12 +58,12 @@ describe('PhotoUpload', () => {
       expect(input).toBeDisabled();
     });
 
-    it('should show "Max photos" message when limit reached', () => {
-      const photos = ['p1', 'p2', 'p3', 'p4', 'p5'];
+    it('should show "Max media" message when limit reached', () => {
+      const photos = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'v1', 'v2', 'v3', 'v4', 'v5'];
 
       render(<PhotoUpload photos={photos} onPhotosChange={mockOnPhotosChange} />);
 
-      expect(screen.getByText(/maximum 5 photos/i)).toBeInTheDocument();
+      expect(screen.getByText(/maximum 15 media files reached/i)).toBeInTheDocument();
     });
   });
 
@@ -161,9 +161,9 @@ describe('PhotoUpload', () => {
       });
     });
 
-    it('should prevent upload when already at max (5 photos)', async () => {
+    it('should prevent upload when already at max (15 media)', async () => {
       const user = userEvent.setup();
-      const maxPhotos = ['p1', 'p2', 'p3', 'p4', 'p5'];
+      const maxPhotos = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'v1', 'v2', 'v3', 'v4', 'v5'];
       render(<PhotoUpload photos={maxPhotos} onPhotosChange={mockOnPhotosChange} />);
 
       const file = new File(['photo'], 'photo.jpg', { type: 'image/jpeg' });
@@ -180,14 +180,14 @@ describe('PhotoUpload', () => {
 
     it('should enforce limit when uploading multiple files', async () => {
       const user = userEvent.setup();
-      const existingPhotos = ['p1', 'p2', 'p3'];
+      const existingPhotos = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'v1', 'v2', 'v3'];
       render(<PhotoUpload photos={existingPhotos} onPhotosChange={mockOnPhotosChange} />);
 
-      // Try to upload 3 more files (would exceed limit of 5)
+      // Try to upload 3 more files (would exceed limit of 15)
       const files = [
-        new File(['photo4'], 'p4.jpg', { type: 'image/jpeg' }),
-        new File(['photo5'], 'p5.jpg', { type: 'image/jpeg' }),
-        new File(['photo6'], 'p6.jpg', { type: 'image/jpeg' }), // This should be rejected
+        new File(['photo11'], 'p11.jpg', { type: 'image/jpeg' }),
+        new File(['photo12'], 'p12.jpg', { type: 'image/jpeg' }),
+        new File(['photo13'], 'p13.jpg', { type: 'image/jpeg' }), // This should be rejected
       ];
       const input = screen.getByLabelText(/upload photo/i) as HTMLInputElement;
 
@@ -196,8 +196,8 @@ describe('PhotoUpload', () => {
       await waitFor(() => {
         expect(mockOnPhotosChange).toHaveBeenCalled();
         const newPhotos = mockOnPhotosChange.mock.calls[0][0];
-        // Should only add 2 photos (p4, p5), reject p6
-        expect(newPhotos).toHaveLength(5);
+        // Should only add 2 files (p11, p12), reject p13
+        expect(newPhotos).toHaveLength(15);
       });
     });
   });
@@ -223,9 +223,9 @@ describe('PhotoUpload', () => {
       expect(mockOnPhotosChange).toHaveBeenCalledWith(['photo1', 'photo3']);
     });
 
-    it('should enable input after deleting photo from max', async () => {
+    it('should enable input after deleting media from max', async () => {
       const user = userEvent.setup();
-      const maxPhotos = ['p1', 'p2', 'p3', 'p4', 'p5'];
+      const maxPhotos = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'v1', 'v2', 'v3', 'v4', 'v5'];
       const { rerender } = render(
         <PhotoUpload photos={maxPhotos} onPhotosChange={mockOnPhotosChange} />
       );
@@ -234,12 +234,12 @@ describe('PhotoUpload', () => {
       let input = screen.getByLabelText(/upload photo/i) as HTMLInputElement;
       expect(input).toBeDisabled();
 
-      // Delete one photo
+      // Delete one media
       const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
       await user.click(deleteButtons[0]);
 
       // Simulate parent re-render with updated photos
-      const updatedPhotos = ['p2', 'p3', 'p4', 'p5'];
+      const updatedPhotos = ['p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9', 'p10', 'v1', 'v2', 'v3', 'v4', 'v5'];
       rerender(<PhotoUpload photos={updatedPhotos} onPhotosChange={mockOnPhotosChange} />);
 
       // Should now be enabled
