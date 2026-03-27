@@ -17,47 +17,17 @@ interface SpotListViewProps {
 }
 
 export function SpotListView({ spots, onSpotClick, onEdit, onFilterChange, onSearchChange, onToggleFavorite }: SpotListViewProps) {
-  const [sortBy, setSortBy] = useState<'recent' | 'name' | 'type' | 'status'>('recent');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
 
   const getSortedSpots = () => {
-    const sorted = [...spots];
-    switch (sortBy) {
-      case 'recent':
-        return sorted.sort((a, b) => (b.updatedAt || b.createdAt) - (a.updatedAt || a.createdAt));
-      case 'name':
-        return sorted.sort((a, b) => getSpotName(a).localeCompare(getSpotName(b)));
-      case 'type':
-        return sorted.sort((a, b) => a.type.localeCompare(b.type));
-      case 'status':
-        return sorted.sort((a, b) => a.status.localeCompare(b.status));
-      default:
-        return sorted;
-    }
+    // Sort by recent (most recently updated/created first)
+    return [...spots].sort((a, b) => (b.updatedAt || b.createdAt) - (a.updatedAt || a.createdAt));
   };
 
   // Helper functions for grid display
   const getSpotName = (spot: Spot) => {
     return spot.owner || `${spot.type.charAt(0).toUpperCase() + spot.type.slice(1)} Spot`;
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'free': return 'var(--status-free)';
-      case 'occupied': return 'var(--status-occupied)';
-      case 'protected': return 'var(--status-protected)';
-      default: return 'var(--text-muted)';
-    }
-  };
-
-  const getSecurityIcon = (level: string) => {
-    switch (level) {
-      case 'low': return '🟢';
-      case 'medium': return '🟡';
-      case 'high': return '🔴';
-      default: return '⚪';
-    }
   };
 
   const handleCardClick = (spot: Spot) => {
@@ -87,35 +57,64 @@ export function SpotListView({ spots, onSpotClick, onEdit, onFilterChange, onSea
 
   const sortedSpots = getSortedSpots();
 
+  // Type icon SVGs
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'wall':
+        return (
+          <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="2" y="6" width="8" height="4" rx="1"/>
+            <rect x="14" y="6" width="8" height="4" rx="1"/>
+            <rect x="2" y="14" width="8" height="4" rx="1"/>
+            <rect x="14" y="14" width="8" height="4" rx="1"/>
+          </svg>
+        );
+      case 'train':
+        return (
+          <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="4" y="8" width="16" height="12" rx="2"/>
+            <path d="M8 20v2M16 20v2"/>
+            <circle cx="8" cy="16" r="1.5"/>
+            <circle cx="16" cy="16" r="1.5"/>
+            <path d="M4 12h16"/>
+          </svg>
+        );
+      case 'sign':
+        return (
+          <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 2v20"/>
+            <path d="M5 8h14l-2 4 2 4H5l2-4-2-4z"/>
+          </svg>
+        );
+      default:
+        return (
+          <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 2c-4.4 0-8 3.6-8 8 0 5.4 8 14 8 14s8-8.6 8-14c0-4.4-3.6-8-8-8z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        );
+    }
+  };
+
+  const getTypeBadgeClass = (type: string) => {
+    return `spot-card-type-badge ${type}`;
+  };
+
   return (
     <div className="spot-list-view">
-      {/* Header with Hamburger */}
+      {/* Header Minimal - No Hamburger */}
       <div className="spot-list-view-header">
+        <h2>SPOT</h2>
+        <div className="spot-list-view-count">{spots.length}</div>
         <button
-          className="hamburger-btn"
+          className="filter-btn"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          aria-label="Toggle filters"
+          aria-label="Filters"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
           </svg>
         </button>
-        <h2>Spots</h2>
-        <div className="spot-list-view-controls">
-          <select
-            className="sort-select"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
-          >
-            <option value="recent">Recent</option>
-            <option value="name">Name</option>
-            <option value="type">Type</option>
-            <option value="status">Status</option>
-          </select>
-          <div className="spot-list-view-count">{spots.length} spots</div>
-        </div>
       </div>
 
       {/* Sidebar Overlay */}
@@ -152,52 +151,39 @@ export function SpotListView({ spots, onSpotClick, onEdit, onFilterChange, onSea
         </div>
       ) : (
         <div className="spot-list-view-grid">
-          {sortedSpots.map(spot => (
+          {sortedSpots.map((spot, index) => (
             <article
               key={spot.id}
               className="spot-card"
               onClick={() => handleCardClick(spot)}
+              style={{ '--index': index } as React.CSSProperties}
             >
-              {/* Card Photo */}
+              {/* Card Photo or Gradient Placeholder */}
               {spot.photos && spot.photos.length > 0 ? (
                 <div className="spot-card-photo">
-                  <img src={spot.photos[0]} alt={getSpotName(spot)} />
-                  {spot.photos.length > 1 && (
-                    <div className="spot-card-photo-count">
-                      +{spot.photos.length - 1}
+                  <img src={spot.photos[0]} alt={getSpotName(spot)} loading="lazy" />
+                  {/* Overlay Gradient */}
+                  <div className="spot-card-overlay">
+                    <div className="spot-card-overlay-content">
+                      <h3 className="spot-card-title">{getSpotName(spot)}</h3>
+                      <span className={getTypeBadgeClass(spot.type)}>{spot.type}</span>
                     </div>
-                  )}
+                  </div>
                 </div>
               ) : (
-                <div className="spot-card-photo-placeholder">
-                  <div className="spot-card-photo-placeholder-icon">📍</div>
+                <div className={`spot-card-photo-placeholder ${spot.type}`}>
+                  <div className="spot-card-photo-placeholder-icon">
+                    {getTypeIcon(spot.type)}
+                  </div>
+                  {/* Overlay for placeholder too */}
+                  <div className="spot-card-overlay">
+                    <div className="spot-card-overlay-content">
+                      <h3 className="spot-card-title">{getSpotName(spot)}</h3>
+                      <span className={getTypeBadgeClass(spot.type)}>{spot.type}</span>
+                    </div>
+                  </div>
                 </div>
               )}
-
-              {/* Card Content */}
-              <div className="spot-card-content">
-                <div className="spot-card-header">
-                  <h3 className="spot-card-title">{getSpotName(spot)}</h3>
-                  <span className="spot-card-type">{spot.type}</span>
-                </div>
-
-                {spot.notes && (
-                  <p className="spot-card-notes">{spot.notes}</p>
-                )}
-
-                {/* Card Tags */}
-                <div className="spot-card-tags">
-                  <span
-                    className="spot-card-tag status"
-                    style={{ color: getStatusColor(spot.status) }}
-                  >
-                    {spot.status}
-                  </span>
-                  <span className="spot-card-tag security">
-                    {getSecurityIcon(spot.securityLevel)} {spot.securityLevel}
-                  </span>
-                </div>
-              </div>
             </article>
           ))}
         </div>

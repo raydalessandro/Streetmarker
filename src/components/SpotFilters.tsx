@@ -23,7 +23,21 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
   const [isSecurityExpanded, setIsSecurityExpanded] = useState<boolean>(false);
   const [isAvailabilityExpanded, setIsAvailabilityExpanded] = useState<boolean>(false);
 
+  // Pending filters (not yet applied)
+  const [pendingTypes, setPendingTypes] = useState<SpotType[]>([]);
+  const [pendingStatuses, setPendingStatuses] = useState<SpotStatus[]>([]);
+  const [pendingSecurityLevels, setPendingSecurityLevels] = useState<SecurityLevel[]>([]);
+  const [pendingAvailableNow, setPendingAvailableNow] = useState<boolean>(false);
+
   const debounceTimerRef = useRef<number | undefined>(undefined);
+
+  // Apply filters when "Applica Filtri" button clicked
+  const handleApplyFilters = () => {
+    setSelectedTypes(pendingTypes);
+    setSelectedStatuses(pendingStatuses);
+    setSelectedSecurityLevels(pendingSecurityLevels);
+    setAvailableNow(pendingAvailableNow);
+  };
 
   // Notify parent when filters change
   useEffect(() => {
@@ -57,25 +71,25 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
 
   const handleTypeChange = (type: SpotType, checked: boolean) => {
     if (checked) {
-      setSelectedTypes([...selectedTypes, type]);
+      setPendingTypes([...pendingTypes, type]);
     } else {
-      setSelectedTypes(selectedTypes.filter((t) => t !== type));
+      setPendingTypes(pendingTypes.filter((t) => t !== type));
     }
   };
 
   const handleStatusChange = (status: SpotStatus, checked: boolean) => {
     if (checked) {
-      setSelectedStatuses([...selectedStatuses, status]);
+      setPendingStatuses([...pendingStatuses, status]);
     } else {
-      setSelectedStatuses(selectedStatuses.filter((s) => s !== status));
+      setPendingStatuses(pendingStatuses.filter((s) => s !== status));
     }
   };
 
   const handleSecurityLevelChange = (level: SecurityLevel, checked: boolean) => {
     if (checked) {
-      setSelectedSecurityLevels([...selectedSecurityLevels, level]);
+      setPendingSecurityLevels([...pendingSecurityLevels, level]);
     } else {
-      setSelectedSecurityLevels(selectedSecurityLevels.filter((l) => l !== level));
+      setPendingSecurityLevels(pendingSecurityLevels.filter((l) => l !== level));
     }
   };
 
@@ -112,7 +126,7 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
           <label className="filter-checkbox">
             <input
               type="checkbox"
-              checked={selectedTypes.includes('wall')}
+              checked={pendingTypes.includes('wall')}
               onChange={(e) => handleTypeChange('wall', e.target.checked)}
             />
             Wall
@@ -120,7 +134,7 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
           <label className="filter-checkbox">
             <input
               type="checkbox"
-              checked={selectedTypes.includes('train')}
+              checked={pendingTypes.includes('train')}
               onChange={(e) => handleTypeChange('train', e.target.checked)}
             />
             Train
@@ -128,7 +142,7 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
           <label className="filter-checkbox">
             <input
               type="checkbox"
-              checked={selectedTypes.includes('sign')}
+              checked={pendingTypes.includes('sign')}
               onChange={(e) => handleTypeChange('sign', e.target.checked)}
             />
             Sign
@@ -136,7 +150,7 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
           <label className="filter-checkbox">
             <input
               type="checkbox"
-              checked={selectedTypes.includes('other')}
+              checked={pendingTypes.includes('other')}
               onChange={(e) => handleTypeChange('other', e.target.checked)}
             />
             Other
@@ -164,7 +178,7 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
           <label className="filter-checkbox">
             <input
               type="checkbox"
-              checked={selectedStatuses.includes('free')}
+              checked={pendingStatuses.includes('free')}
               onChange={(e) => handleStatusChange('free', e.target.checked)}
             />
             Free
@@ -172,7 +186,7 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
           <label className="filter-checkbox">
             <input
               type="checkbox"
-              checked={selectedStatuses.includes('occupied')}
+              checked={pendingStatuses.includes('occupied')}
               onChange={(e) => handleStatusChange('occupied', e.target.checked)}
             />
             Occupied
@@ -180,7 +194,7 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
           <label className="filter-checkbox">
             <input
               type="checkbox"
-              checked={selectedStatuses.includes('protected')}
+              checked={pendingStatuses.includes('protected')}
               onChange={(e) => handleStatusChange('protected', e.target.checked)}
             />
             Protected
@@ -208,7 +222,7 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
           <label className="filter-checkbox">
             <input
               type="checkbox"
-              checked={selectedSecurityLevels.includes('low')}
+              checked={pendingSecurityLevels.includes('low')}
               onChange={(e) => handleSecurityLevelChange('low', e.target.checked)}
             />
             Low
@@ -216,7 +230,7 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
           <label className="filter-checkbox">
             <input
               type="checkbox"
-              checked={selectedSecurityLevels.includes('medium')}
+              checked={pendingSecurityLevels.includes('medium')}
               onChange={(e) => handleSecurityLevelChange('medium', e.target.checked)}
             />
             Medium
@@ -224,7 +238,7 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
           <label className="filter-checkbox">
             <input
               type="checkbox"
-              checked={selectedSecurityLevels.includes('high')}
+              checked={pendingSecurityLevels.includes('high')}
               onChange={(e) => handleSecurityLevelChange('high', e.target.checked)}
             />
             High
@@ -252,8 +266,8 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
           <label className="filter-checkbox">
             <input
               type="checkbox"
-              checked={availableNow}
-              onChange={(e) => setAvailableNow(e.target.checked)}
+              checked={pendingAvailableNow}
+              onChange={(e) => setPendingAvailableNow(e.target.checked)}
             />
             Disponibile adesso
           </label>
@@ -279,6 +293,13 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
             </label>
           </div>
         </div>
+      </div>
+
+      {/* Apply Filters Button - Sticky */}
+      <div className="filter-apply-container">
+        <button className="filter-apply-btn" onClick={handleApplyFilters}>
+          Applica Filtri
+        </button>
       </div>
     </div>
   );
