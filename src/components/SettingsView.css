@@ -1,12 +1,13 @@
-/* Settings View Styles */
+/* Settings View — Configuration Panel */
+
 .settings-view {
   display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
   overflow-y: auto;
-  background: var(--bg-primary);
-  padding-bottom: 80px; /* Space for bottom nav */
+  background: var(--bg);
+  padding-bottom: 72px; /* Space for bottom nav */
 }
 
 .settings-view-header {
@@ -14,21 +15,24 @@
   top: 0;
   z-index: 10;
   padding: var(--space-4);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  border-bottom: 1px solid var(--border-color);
+  background: var(--glass);
+  backdrop-filter: var(--blur);
+  border-bottom: 1px solid var(--border);
 }
 
 .settings-view-header h2 {
-  font-size: var(--text-xl);
-  font-weight: var(--font-bold);
-  color: var(--text-primary);
+  font-size: 22px;
+  font-weight: 800;
+  font-family: var(--font-title);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--t1);
   margin-bottom: var(--space-2);
 }
 
 .settings-view-subtitle {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
+  font-size: 14px;
+  color: var(--t3);
 }
 
 /* Settings Content */
@@ -44,29 +48,29 @@
 
 /* Settings Section */
 .settings-section {
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--border-color);
+  background: var(--bg2);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
 .settings-section-header {
   padding: var(--space-4);
-  border-bottom: 1px solid var(--border-color);
-  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
 }
 
 .settings-section-header h3 {
-  font-size: var(--text-lg);
-  font-weight: var(--font-bold);
-  color: var(--text-primary);
-  margin-bottom: var(--space-1);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-title);
+  color: var(--t1);
+  margin-bottom: 4px;
 }
 
 .settings-section-header p {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
+  font-size: 13px;
+  color: var(--t3);
 }
 
 .settings-section-content {
@@ -82,24 +86,26 @@
 
 .storage-stat-item {
   padding: var(--space-3);
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--bg3);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   text-align: center;
 }
 
 .storage-stat-label {
-  font-size: var(--text-xs);
-  color: var(--text-muted);
+  font-size: 10px;
+  color: var(--t3);
+  font-family: var(--font-title);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   margin-bottom: var(--space-2);
 }
 
 .storage-stat-value {
-  font-size: var(--text-xl);
-  font-weight: var(--font-bold);
-  color: var(--neon-green);
+  font-size: 24px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--accent);
 }
 
 /* App Info */
@@ -114,21 +120,22 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--space-3);
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--bg3);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
 }
 
 .app-info-label {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  font-weight: var(--font-medium);
+  font-size: 13px;
+  color: var(--t3);
+  font-weight: 600;
+  font-family: var(--font-body);
 }
 
 .app-info-value {
-  font-size: var(--text-sm);
-  color: var(--text-primary);
-  font-weight: var(--font-semibold);
+  font-size: 13px;
+  color: var(--t1);
+  font-weight: 700;
   font-family: var(--font-mono);
 }
 

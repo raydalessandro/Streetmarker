@@ -1,12 +1,13 @@
-/* Gallery View Styles */
+/* Gallery View — Masonry Photo Grid */
+
 .gallery-view {
   display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
   overflow-y: auto;
-  background: var(--bg-primary);
-  padding-bottom: 80px; /* Space for bottom nav */
+  background: var(--bg);
+  padding-bottom: 72px; /* Space for bottom nav */
 }
 
 .gallery-header {
@@ -14,28 +15,32 @@
   top: 0;
   z-index: 10;
   padding: var(--space-4);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  border-bottom: 1px solid var(--border-color);
+  background: var(--glass);
+  backdrop-filter: var(--blur);
+  border-bottom: 1px solid var(--border);
 }
 
 .gallery-header h2 {
-  font-size: var(--text-xl);
-  font-weight: var(--font-bold);
-  color: var(--text-primary);
+  font-size: 22px;
+  font-weight: 800;
+  font-family: var(--font-title);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--t1);
   margin-bottom: var(--space-2);
 }
 
 .gallery-stats {
   display: flex;
   gap: var(--space-4);
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
+  font-size: 13px;
+  color: var(--t3);
+  font-family: var(--font-mono);
 }
 
 .gallery-stats span {
-  padding: var(--space-1) var(--space-3);
-  background: var(--bg-secondary);
+  padding: 4px var(--space-3);
+  background: var(--bg2);
   border-radius: var(--radius-md);
 }
 
@@ -47,37 +52,43 @@
   justify-content: center;
   height: 60vh;
   text-align: center;
-  color: var(--text-secondary);
+  color: var(--t3);
 }
 
 .empty-icon {
-  font-size: 4rem;
+  font-size: 64px;
   margin-bottom: var(--space-4);
   opacity: 0.5;
 }
 
 .empty-state p {
-  font-size: var(--text-lg);
+  font-size: 18px;
+  font-family: var(--font-title);
   margin-bottom: var(--space-2);
 }
 
 .empty-hint {
-  font-size: var(--text-sm);
-  color: var(--text-muted);
+  font-size: 14px;
+  color: var(--t3);
 }
 
-/* Gallery Grid */
+/* Gallery Grid — Masonry-like with 3px gap */
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: var(--space-2);
-  padding: var(--space-4);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  padding: 0;
 }
 
 @media (min-width: 768px) {
   .gallery-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: var(--space-3);
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .gallery-grid {
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 
@@ -86,13 +97,13 @@
   position: relative;
   aspect-ratio: 1;
   overflow: hidden;
-  border-radius: var(--radius-md);
   cursor: pointer;
   transition: transform var(--transition-fast);
+  background: var(--bg3);
 }
 
 .gallery-item:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);
   z-index: 1;
 }
 
@@ -102,13 +113,14 @@
   object-fit: cover;
 }
 
+/* Overlay on hover — gradient bottom-up */
 .gallery-item-overlay {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   padding: var(--space-3);
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
   opacity: 0;
   transition: opacity var(--transition-fast);
 }
@@ -118,20 +130,45 @@
 }
 
 .gallery-item-title {
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--text-primary);
-  margin-bottom: var(--space-1);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-title);
+  color: var(--t1);
+  margin-bottom: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .gallery-item-type {
-  font-size: var(--text-xs);
-  color: var(--neon-green);
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-title);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
+.gallery-item-type.wall {
+  background: rgba(200, 255, 0, 0.12);
+  color: var(--accent);
+}
+
+.gallery-item-type.train {
+  background: rgba(61, 180, 242, 0.15);
+  color: var(--blue);
+}
+
+.gallery-item-type.sign {
+  background: rgba(255, 140, 66, 0.15);
+  color: var(--orange);
+}
+
+.gallery-item-type.other {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--t2);
 }
 
 /* Photo Modal */
@@ -142,6 +179,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(8px);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -164,7 +202,7 @@
   max-height: 70vh;
   object-fit: contain;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
 }
 
 .photo-modal-close {
@@ -174,10 +212,10 @@
   width: 36px;
   height: 36px;
   border: none;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
+  background: var(--glass);
+  backdrop-filter: var(--blur);
   border-radius: var(--radius-full);
-  color: var(--text-primary);
+  color: var(--t1);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -186,28 +224,29 @@
 }
 
 .photo-modal-close:hover {
-  background: var(--neon-green);
-  color: var(--bg-primary);
+  background: var(--accent);
+  color: var(--bg);
 }
 
 .photo-modal-info {
   padding: var(--space-4);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
+  background: var(--glass);
+  backdrop-filter: var(--blur);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border2);
 }
 
 .photo-modal-info h3 {
-  font-size: var(--text-lg);
-  font-weight: var(--font-bold);
-  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-title);
+  color: var(--t1);
   margin-bottom: var(--space-2);
 }
 
 .photo-modal-info p {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
+  font-size: 14px;
+  color: var(--t2);
   margin-bottom: var(--space-4);
   line-height: 1.6;
 }
@@ -215,20 +254,22 @@
 .photo-modal-view-spot {
   width: 100%;
   padding: var(--space-3);
-  background: var(--neon-green);
-  color: var(--bg-primary);
-  border: none;
+  background: var(--accent);
+  color: var(--bg);
+  border: 1px solid var(--accent);
   border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-title);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .photo-modal-view-spot:hover {
-  background: var(--neon-green-hover);
+  background: transparent;
+  color: var(--accent);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--neon-green-glow);
+  box-shadow: 0 4px 12px var(--accent-glow);
 }
 
 @keyframes fadeIn {

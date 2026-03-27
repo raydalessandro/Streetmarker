@@ -1,14 +1,15 @@
-/* Bottom Navigation - Mobile-First Street Art Style */
+/* Bottom Navigation — Street Art Mobile UI */
+
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   height: 64px;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-top: 1px solid var(--glass-border);
+  background: var(--glass);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-top: 1px solid var(--border2);
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -25,22 +26,22 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-1);
+  gap: 2px;
   padding: var(--space-2);
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: var(--t3);
   cursor: pointer;
   transition: all var(--transition-fast);
   position: relative;
 }
 
 .nav-item:hover {
-  color: var(--text-primary);
+  color: var(--t2);
 }
 
 .nav-item.active {
-  color: var(--neon-green);
+  color: var(--accent);
 }
 
 .nav-item.active::before {
@@ -51,9 +52,9 @@
   transform: translateX(-50%);
   width: 40px;
   height: 3px;
-  background: var(--neon-green);
+  background: var(--accent);
   border-radius: 0 0 3px 3px;
-  box-shadow: 0 0 10px var(--neon-green-glow);
+  box-shadow: 0 0 10px var(--accent-glow);
 }
 
 /* Nav Icon */
@@ -69,9 +70,11 @@
 
 /* Nav Label */
 .nav-label {
-  font-size: var(--text-xs);
-  font-weight: var(--font-semibold);
-  letter-spacing: 0.5px;
+  font-size: 10px;
+  font-weight: 800;
+  font-family: var(--font-title);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
 /* FAB - Floating Action Button (Center) */
@@ -79,11 +82,11 @@
   width: 56px;
   height: 56px;
   border-radius: var(--radius-full);
-  background: var(--neon-green);
-  color: var(--bg-primary);
-  border: 4px solid var(--bg-primary);
+  background: var(--accent);
+  color: var(--bg);
+  border: 4px solid var(--bg);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4),
-              0 0 24px var(--neon-green-glow);
+              0 0 24px var(--accent-glow);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,18 +94,18 @@
   transition: all var(--transition-smooth);
   position: relative;
   margin: 0 var(--space-2);
-  transform: translateY(-8px);
+  transform: translateY(-10px);
   z-index: 1001;
 }
 
 .fab:hover {
-  transform: translateY(-8px) scale(1.05);
+  transform: translateY(-10px) scale(1.06);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5),
-              0 0 32px var(--neon-green-glow);
+              0 0 32px var(--accent-glow);
 }
 
 .fab:active {
-  transform: translateY(-8px) scale(0.95) rotate(90deg);
+  transform: translateY(-10px) scale(0.95) rotate(90deg);
 }
 
 /* FAB Icon */
@@ -115,7 +118,7 @@
   stroke-linecap: round;
 }
 
-/* Desktop: Hide bottom nav, show in mobile */
+/* Desktop: Hide bottom nav */
 @media (min-width: 768px) {
   .bottom-nav {
     display: none;
@@ -130,13 +133,13 @@
   }
 
   .fab:active {
-    transform: translateY(-8px) scale(0.9) rotate(90deg);
+    transform: translateY(-10px) scale(0.9) rotate(90deg);
   }
 }
 
 /* Accessibility */
 .nav-item:focus-visible,
 .fab:focus-visible {
-  outline: 2px solid var(--neon-green);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
