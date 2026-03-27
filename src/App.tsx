@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { MapView } from './components/MapView';
 import { SpotForm } from './components/SpotForm';
 import { SpotList } from './components/SpotList';

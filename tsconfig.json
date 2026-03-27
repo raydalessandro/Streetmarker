@@ -24,19 +24,8 @@
   },
   "include": ["src"],
   "exclude": [
-    "src/components/**/__tests__/**",
-    "src/services/__tests__/ExportService.test.ts",
-    "src/services/__tests__/ImportService.test.ts",
-    "src/services/__tests__/MapService.test.ts",
-    "src/services/__tests__/SpotService.test.ts",
-    "src/components/MapView.tsx",
-    "src/components/SpotForm.tsx",
-    "src/components/SpotList.tsx",
-    "src/components/ImportExport.tsx",
-    "src/services/MapService.ts",
-    "src/services/SpotService.ts",
-    "src/services/ExportService.ts",
-    "src/services/ImportService.ts"
+    "src/**/__tests__/**",
+    "src/test/**"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -1,5 +1,4 @@
 // src/components/SpotList.tsx
-import React from 'react';
 import type { Spot } from '../types/spot';
 
 export interface SpotListProps {

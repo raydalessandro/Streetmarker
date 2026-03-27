@@ -1,13 +1,13 @@
 // Integration tests for App.tsx
 // Tests orchestration of all modules and data flow
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../../App';
 import { StorageService } from '../../services/StorageService';
 import { ExportService } from '../../services/ExportService';
 import { ImportService } from '../../services/ImportService';
-import type { Spot, ExportData } from '../../types/spot';
+import type { Spot } from '../../types/spot';
 
 // Mock Leaflet
 vi.mock('leaflet', () => ({
@@ -155,7 +155,6 @@ describe('App Integration Tests', () => {
     });
 
     it('manages form modal state', async () => {
-      const user = userEvent.setup();
       render(<App />);
 
       await waitFor(() => {
@@ -202,7 +201,6 @@ describe('App Integration Tests', () => {
 
   describe('Add Spot Flow', () => {
     it('completes full add spot flow: map click -> form -> storage -> refresh', async () => {
-      const user = userEvent.setup();
       mockStorageService.getAllSpots
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([mockSpots[0]]);
@@ -563,7 +561,6 @@ describe('App Integration Tests', () => {
 
   describe('Data Flow Integration', () => {
     it('maintains data consistency across all operations', async () => {
-      const user = userEvent.setup();
       mockStorageService.getAllSpots
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([mockSpots[0]])

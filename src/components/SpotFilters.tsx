@@ -1,5 +1,5 @@
 // src/components/SpotFilters.tsx
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { SpotType, SpotStatus, SecurityLevel } from '../types/spot';
 import type { SpotFilters as SpotFiltersType } from '../services/SpotService';
 
@@ -15,7 +15,7 @@ export function SpotFilters({ onFilterChange, onSearchChange }: SpotFiltersProps
   const [availableNow, setAvailableNow] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const debounceTimerRef = useRef<NodeJS.Timeout>();
+  const debounceTimerRef = useRef<number | undefined>(undefined);
 
   // Notify parent when filters change
   useEffect(() => {

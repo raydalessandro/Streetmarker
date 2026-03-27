@@ -1,5 +1,5 @@
 // src/services/SpotService.ts
-import type { Spot, SpotType, SpotStatus, SecurityLevel, TimeRange } from '../types/spot';
+import type { Spot, SpotType, SpotStatus, SecurityLevel } from '../types/spot';
 import { isValidCoords, isValidTimeRange } from '../utils/validation';
 
 export interface SpotFilters {
@@ -83,7 +83,6 @@ export class SpotService {
     const now = currentTime || new Date();
     const currentHours = now.getHours();
     const currentMinutes = now.getMinutes();
-    const currentTimeString = `${currentHours.toString().padStart(2, '0')}:${currentMinutes.toString().padStart(2, '0')}`;
 
     // If no availability ranges, spot is not available
     if (!spot.availability || spot.availability.length === 0) {
