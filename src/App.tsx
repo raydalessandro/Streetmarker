@@ -49,6 +49,12 @@ function App() {
         }
 
         const allSpots = await storageService.getAllSpots();
+        console.log('[App] Loaded spots from IndexedDB:', allSpots.length);
+        allSpots.forEach(spot => {
+          if (spot.photos && spot.photos.length > 0) {
+            console.log(`[App] Spot ${spot.id} has ${spot.photos.length} photos`);
+          }
+        });
         setSpots(allSpots);
       } catch (error) {
         console.error('Failed to load spots:', error);
@@ -93,6 +99,8 @@ function App() {
    */
   const handleFormSubmit = async (spotData: Omit<Spot, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
+      console.log('[App] Submitting spot with photos:', spotData.photos?.length || 0);
+
       if (selectedSpot) {
         // Update existing spot
         const updatedSpot: Spot = {
@@ -101,15 +109,18 @@ function App() {
           createdAt: selectedSpot.createdAt,
           updatedAt: Date.now(),
         };
+        console.log('[App] Updating spot:', updatedSpot.id, 'with photos:', updatedSpot.photos?.length || 0);
         await storageService.updateSpot(updatedSpot);
       } else {
         // Add new spot
         const newSpot = spotService.createSpot(spotData);
+        console.log('[App] Creating new spot:', newSpot.id, 'with photos:', newSpot.photos?.length || 0);
         await storageService.addSpot(newSpot);
       }
 
       // Refresh spots and close form
       await refreshSpots();
+      console.log('[App] Spots refreshed, total:', spots.length);
       handleFormCancel();
     } catch (error) {
       console.error('Failed to save spot:', error);

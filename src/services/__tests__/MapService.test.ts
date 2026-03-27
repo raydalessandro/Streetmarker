@@ -280,4 +280,154 @@ describe('MapService', () => {
       }).not.toThrow();
     });
   });
+
+  describe('createPopupContent', () => {
+    beforeEach(() => {
+      mapService.initMap('test-map', [45.4642, 9.1900], 13);
+    });
+
+    it('should create popup with valid photos', () => {
+      const spot: Spot = {
+        id: 'test-1',
+        coords: [45.4642, 9.19],
+        type: 'wall',
+        status: 'free',
+        availability: [],
+        securityLevel: 'low',
+        notes: 'Test spot',
+        photos: ['data:image/jpeg;base64,/9j/4AAQSkZJRg==', 'data:image/png;base64,iVBORw0KGg=='],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      const marker = mapService.addMarker(spot);
+      expect(marker).toBeDefined();
+
+      // Verify popup was created (no errors thrown)
+      expect(() => marker.openPopup()).not.toThrow();
+    });
+
+    it('should create popup with valid videos', () => {
+      const spot: Spot = {
+        id: 'test-2',
+        coords: [45.4642, 9.19],
+        type: 'wall',
+        status: 'free',
+        availability: [],
+        securityLevel: 'low',
+        notes: 'Video spot',
+        photos: ['data:video/mp4;base64,AAAAIGZ0eXBpc29t'],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      const marker = mapService.addMarker(spot);
+      expect(marker).toBeDefined();
+      expect(() => marker.openPopup()).not.toThrow();
+    });
+
+    it('should handle invalid photos gracefully', () => {
+      const spot: Spot = {
+        id: 'test-3',
+        coords: [45.4642, 9.19],
+        type: 'wall',
+        status: 'free',
+        availability: [],
+        securityLevel: 'low',
+        notes: 'Mixed spot',
+        photos: [
+          'data:image/jpeg;base64,/9j/4AAQSkZJRg==', // valid
+          'invalid-base64-string', // invalid
+          'data:image/png;base64,iVBORw0KGg==', // valid
+        ],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      // Should not crash when creating popup with invalid photos
+      const marker = mapService.addMarker(spot);
+      expect(marker).toBeDefined();
+      expect(() => marker.openPopup()).not.toThrow();
+    });
+
+    it('should create popup without photos section when no photos', () => {
+      const spot: Spot = {
+        id: 'test-4',
+        coords: [45.4642, 9.19],
+        type: 'wall',
+        status: 'free',
+        availability: [],
+        securityLevel: 'low',
+        notes: 'No photos',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      const marker = mapService.addMarker(spot);
+      expect(marker).toBeDefined();
+      expect(() => marker.openPopup()).not.toThrow();
+    });
+
+    it('should handle empty photos array', () => {
+      const spot: Spot = {
+        id: 'test-5',
+        coords: [45.4642, 9.19],
+        type: 'wall',
+        status: 'free',
+        availability: [],
+        securityLevel: 'low',
+        notes: 'Empty photos',
+        photos: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      const marker = mapService.addMarker(spot);
+      expect(marker).toBeDefined();
+      expect(() => marker.openPopup()).not.toThrow();
+    });
+
+    it('should handle all invalid photos gracefully', () => {
+      const spot: Spot = {
+        id: 'test-6',
+        coords: [45.4642, 9.19],
+        type: 'wall',
+        status: 'free',
+        availability: [],
+        securityLevel: 'low',
+        notes: 'All invalid',
+        photos: ['invalid1', 'invalid2', 'not-base64'],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      // Should not crash, should create fallback marker if needed
+      const marker = mapService.addMarker(spot);
+      expect(marker).toBeDefined();
+      expect(() => marker.openPopup()).not.toThrow();
+    });
+
+    it('should handle mixed photos and videos', () => {
+      const spot: Spot = {
+        id: 'test-7',
+        coords: [45.4642, 9.19],
+        type: 'wall',
+        status: 'free',
+        availability: [],
+        securityLevel: 'low',
+        notes: 'Mixed media',
+        photos: [
+          'data:image/jpeg;base64,/9j/4AAQSkZJRg==',
+          'data:video/mp4;base64,AAAAIGZ0eXBpc29t',
+          'data:image/png;base64,iVBORw0KGg==',
+        ],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      const marker = mapService.addMarker(spot);
+      expect(marker).toBeDefined();
+      expect(() => marker.openPopup()).not.toThrow();
+    });
+  });
 });
